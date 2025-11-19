@@ -91,7 +91,8 @@
           <div class="toggle-center">
             <button class="toggle-btn" data-target="total-graph-time-body">表示</button>
           </div>
-          <div id="total-graph-time-body" class="toggle-body collapsed fade-slide fade-graph">
+          <!-- collapsed を外す！（グラフ描画バグ防止） -->
+          <div id="total-graph-time-body" class="toggle-body fade-slide fade-graph">
             <canvas id="series-time-bar"></canvas>
           </div>
         </div>
@@ -102,12 +103,14 @@
           <div class="toggle-center">
             <button class="toggle-btn" data-target="total-graph-count-body">表示</button>
           </div>
-          <div id="total-graph-count-body" class="toggle-body collapsed fade-slide fade-graph">
+          <!-- collapsed を外す！（グラフ描画バグ防止） -->
+          <div id="total-graph-count-body" class="toggle-body fade-slide fade-graph">
             <canvas id="series-count-bar"></canvas>
           </div>
         </div>
       
       </section>
+
 
       
       <!-- まとめ -->
@@ -123,13 +126,20 @@
               <div class="summary-title">総配信時間</div>
               <div class="summary-value" id="sum-total-time">--</div>
             </div>
+      
             <div class="summary-card">
               <div class="summary-title">総配信回数</div>
               <div class="summary-value" id="sum-total-count">--</div>
             </div>
+      
             <div class="summary-card">
               <div class="summary-title">平均配信時間</div>
               <div class="summary-value" id="sum-avg-time">--</div>
+            </div>
+      
+            <div class="summary-card">
+              <div class="summary-title">プレイ期間（全体）</div>
+              <div class="summary-value" id="sum-total-period">--</div>
             </div>
           </div>
         </div>
