@@ -215,7 +215,7 @@ function renderTotalTab() {
   renderTotalRankings(seriesStats);
 
   // グラフ
-  renderTotalCharts(seriesStats);
+  (seriesStats);
 }
 
 function renderTotalRankings(seriesStats) {
@@ -319,7 +319,7 @@ function renderTotalCharts(seriesStats) {
       y: {
         ticks: {
           color: "#E5E7EB",
-          stepSize: 36000, // 10時間刻み
+          stepSize: 36000,
           callback: v => {
             const h = Math.floor(v / 3600);
             const m = Math.floor((v % 3600) / 60);
@@ -345,8 +345,7 @@ function renderTotalCharts(seriesStats) {
     options: timeOptions
   });
 
-
-  /* --- ▼▼ シリーズ別配信回数（棒グラフ） ▼▼ --- */
+  /* --- ▼▼ シリーズ別配信回数 ▼▼ --- */
 
   const ctxCount = document.getElementById("series-count-bar").getContext("2d");
   if (charts.countBar) charts.countBar.destroy();
@@ -369,7 +368,7 @@ function renderTotalCharts(seriesStats) {
         ticks: {
           color: "#E5E7EB",
           stepSize: 1,
-          callback: v => `${v}回`
+          callback: value => `${value}回`
         },
         grid: { color: "rgba(55,65,81,0.4)" }
       }
@@ -389,24 +388,19 @@ function renderTotalCharts(seriesStats) {
     options: countOptions
   });
 
+  /* --- ▼▼ グラフフェードイン ▼▼ --- */
 
-  /* --- ▼▼ グラフ表示アニメを他と統一（ぼわん） ▼▼ --- */
-
-  // グラフが入っている toggle-body を取得
   const timeBody = document.getElementById("total-graph-time-body");
   const countBody = document.getElementById("total-graph-count-body");
 
-  // まず blow 削除（連続切り替え用）
-  timeBody.classList.remove("blow");
-  countBody.classList.remove("blow");
+  timeBody.classList.remove("show");
+  countBody.classList.remove("show");
 
-  // 次のフレームで blow を再追加してアニメ発火
   setTimeout(() => {
-    timeBody.classList.add("blow");
-    countBody.classList.add("blow");
+    timeBody.classList.add("show");
+    countBody.classList.add("show");
   }, 20);
 }
-
 
 /* ========= シリーズタブ ========= */
 
