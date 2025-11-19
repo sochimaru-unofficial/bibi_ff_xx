@@ -424,7 +424,7 @@ function renderTimeGraph(seriesStats) {
 function renderCountGraph(seriesStats) {
   const labels = seriesStats.map(s => s.series);
   const countData = seriesStats.map(s => s.count);
-  const colors = labels.map(s => SERIES_COLORS[s] || "#888";
+  const colors = labels.map(s => SERIES_COLORS[s] || "#888";)
 
   const canvas = document.getElementById("series-count-bar");
   if (!canvas) return;
