@@ -5,8 +5,6 @@ let flatList = [];
 
 async function main() {
   data = await fetch(JSON_URL).then(res => res.json());
-
-  // 全シリーズをフラットにまとめる
   flatList = Object.values(data).flat();
 
   document.getElementById("series-select").addEventListener("change", () => {
@@ -19,59 +17,59 @@ async function main() {
 function updateView() {
   const series = document.getElementById("series-select").value;
 
-  let list = [];
-  if (series === "all") {
-    list = flatList;
-  } else {
-    list = data[series] || [];
-  }
+  let list = series === "all"
+    ? flatList
+    : data[series] || [];
 
   renderStats(list);
   renderCards(list);
 }
 
 function renderStats(list) {
-  // 配信回数
   document.getElementById("count").textContent = list.length + " 回";
 
-  // ------- 総配信時間 -------
-  let totalSeconds = 0;
+  // === 総配信時間（秒計算 → H/M/S） ===
+  let totalSec = 0;
+
   list.forEach(item => {
     if (!item["配信時間"]) return;
 
-    // "HH:MM:SS" → 秒に変換
     const [h, m, s] = item["配信時間"].split(":").map(Number);
-    totalSeconds += h * 3600 + m * 60 + s;
+    totalSec += h * 3600 + m * 60 + s;
   });
 
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
+  const H = Math.floor(totalSec / 3600);
+  const M = Math.floor((totalSec % 3600) / 60);
+  const S = totalSec % 60;
 
   document.getElementById("total-time").textContent =
-    `${hours}時間 ${minutes}分 ${seconds}秒`;
+    `${H}時間 ${M}分 ${S}秒`;
 
-  // ------- 配信期間 -------
+  // === 期間 ===
   const dates = list
     .filter(i => i["配信日時"])
     .map(i => new Date(i["配信日時"]));
 
-  if (dates.length > 0) {
+  if (dates.length) {
     const min = new Date(Math.min(...dates));
     const max = new Date(Math.max(...dates));
 
     document.getElementById("range").textContent =
-      `${formatDate(min)} 〜 ${formatDate(max)}`;
+      `${fmt(min)} 〜 ${fmt(max)}`;
   } else {
     document.getElementById("range").textContent = "なし";
   }
 }
 
-function formatDate(date) {
-  const y = date.getFullYear();
-  const m = ("0" + (date.getMonth() + 1)).slice(-2);
-  const d = ("0" + date.getDate()).slice(-2);
-  return `${y}/${m}/${d}`;
+// ★ 日付を「2025年3月22日12時開始」へ
+function fmt(d) {
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const hour = d.getHours();
+  const min = String(d.getMinutes()).padStart(2, "0");
+
+  return `${year}年${month}月${day}日${hour}時${min}分開始`;
 }
 
 function renderCards(list) {
@@ -79,23 +77,22 @@ function renderCards(list) {
   container.innerHTML = "";
 
   list.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    // YouTube URL とサムネ
     const youtube = `https://www.youtube.com/watch?v=${item.videoId}`;
     const thumb = `https://i.ytimg.com/vi/${item.videoId}/maxresdefault.jpg`;
 
-    card.innerHTML = `
-      <img class="thumb" src="${thumb}" />
+    const card = document.createElement("div");
+    card.className = "card";
 
-      <div class="info">
-        <div class="title">${item["タイトル"]}</div>
-        <div class="meta">
-          日付：${item["配信日時"]}<br>
-          配信時間：${item["配信時間"]}<br>
-          <a href="${youtube}" target="_blank">YouTubeリンク</a>
-        </div>
+    card.innerHTML = `
+      <a class="thumb-wrapper" href="${youtube}" target="_blank">
+        <img class="thumb" src="${thumb}" />
+      </a>
+
+      <div class="title">${item["タイトル"]}</div>
+      <div class="meta">
+        ${fmt(new Date(item["配信日時"]))}<br>
+        配信時間：${item["配信時間"]}<br>
+        <a href="${youtube}" target="_blank">YouTubeリンク</a>
       </div>
     `;
 
