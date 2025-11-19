@@ -81,21 +81,42 @@ function switchTab(series) {
   const totalPanel = document.getElementById("tab-total");
   const seriesPanel = document.getElementById("tab-series");
 
-  [totalPanel, seriesPanel].forEach(panel => {
-    panel.classList.add("tab-switching");
-    setTimeout(() => panel.classList.remove("tab-switching"), 200);
+  // まず完全にアニメ状態をリセット
+  document.querySelectorAll(".fade-slide").forEach(el => {
+    el.classList.remove("show");
   });
 
   if (series === "total") {
     totalPanel.classList.remove("hidden");
     seriesPanel.classList.add("hidden");
+
+    // 再描画
     renderTotalTab();
+
+    // アニメ再実行
+    triggerFadeSlide(totalPanel);
+
   } else {
     totalPanel.classList.add("hidden");
     seriesPanel.classList.remove("hidden");
+
+    // 再描画
     renderSeriesTab(series);
+
+    // アニメ再実行
+    triggerFadeSlide(seriesPanel);
   }
 }
+
+function triggerFadeSlide(panel) {
+  // 再度 Observer 発火させてアニメ開始
+  const targets = panel.querySelectorAll(".fade-slide");
+  targets.forEach(el => {
+    // アニメを少し遅らせる
+    setTimeout(() => el.classList.add("show"), 30);
+  });
+}
+
 
 /* ========== トータルタブ ========== */
 
