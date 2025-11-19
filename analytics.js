@@ -178,7 +178,6 @@ function renderTotalTab() {
   let totalSec = 0;
   let totalCount = allData.length;
   const seriesStats = [];
-
   let allDates = [];
 
   SERIES_LIST.forEach(s => {
@@ -196,7 +195,7 @@ function renderTotalTab() {
     allDates.push(...dates);
 
     const firstItem = list.slice().sort(
-      (a,b) => new Date(a["配信日時"]) - new Date(b["配信日時"])
+      (a, b) => new Date(a["配信日時"]) - new Date(b["配信日時"])
     )[0];
 
     seriesStats.push({
@@ -210,13 +209,13 @@ function renderTotalTab() {
     totalSec += sec;
   });
 
-  // まとめ（合計）
+  // まとめ
   document.getElementById("sum-total-time").textContent = formatHMS(totalSec);
   document.getElementById("sum-total-count").textContent = `${totalCount} 回`;
   const avgSec = totalCount ? Math.floor(totalSec / totalCount) : 0;
   document.getElementById("sum-avg-time").textContent = formatHMS(avgSec);
 
-  // 全体のプレイ期間
+  // 全体プレイ期間
   const min = new Date(Math.min(...allDates));
   const max = new Date(Math.max(...allDates));
   document.getElementById("sum-total-period").textContent =
@@ -225,7 +224,6 @@ function renderTotalTab() {
   // ランキング
   renderTotalRankings(seriesStats);
 
-  // グラフ
   renderTotalCharts(seriesStats);
 }
 
@@ -306,7 +304,6 @@ function renderTotalCharts(seriesStats) {
   const labels = seriesStats.map(s => s.series);
   const timeData = seriesStats.map(s => s.sec);
   const countData = seriesStats.map(s => s.count);
-
   const colors = labels.map(s => SERIES_COLORS[s] || "#888");
 
   /* ▼ 時間棒グラフ ▼ */
@@ -381,12 +378,13 @@ function renderTotalCharts(seriesStats) {
   timeBody.classList.remove("show-graph");
   countBody.classList.remove("show-graph");
 
-  // 次のフレームでフェードイン
+  // 次のフレームで確実にフェードイン
   requestAnimationFrame(() => {
     timeBody.classList.add("show-graph");
     countBody.classList.add("show-graph");
   });
 }
+
 
 /* ========= シリーズタブ ========= */
 
