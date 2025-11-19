@@ -1,0 +1,121 @@
+/* ===== 共通 ===== */
+body {
+  margin: 0;
+  padding: 0;
+  background: #121217;
+  color: #EDEAF5;
+  font-family: "Segoe UI", "Hiragino Sans", sans-serif;
+}
+
+section {
+  padding: 50px 8%;
+}
+
+/* ===== Hero ===== */
+.hero {
+  text-align: center;
+  padding: 80px 0;
+  background: linear-gradient(180deg, #1A1720, #121217);
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  color: #D7A7E9;
+  text-shadow: 0 0 8px rgba(215,167,233,0.5);
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #C5BAD5;
+}
+
+/* ===== 全体統計カード ===== */
+.stat-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 240px;
+  background: #1C1A23;
+  padding: 25px;
+  border-radius: 14px;
+  border: 1px solid rgba(138, 79, 183, 0.4);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+}
+
+.stat-title {
+  font-size: 1.1rem;
+  color: #C5BAD5;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #EDEAF5;
+}
+
+/* ===== シリーズ別カード ===== */
+#series-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.series-card {
+  width: calc(33% - 20px);
+  min-width: 280px;
+  background: #1A1820;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(138,79,183,0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+}
+
+.series-card:hover {
+  transform: translateY(-5px);
+}
+
+.series-title {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #D7A7E9;
+}
+
+.series-item {
+  font-size: 1rem;
+  margin: 4px 0;
+  color: #C5BAD5;
+}
+
+/* ===== グラフ ===== */
+canvas {
+  width: 100%;
+  max-height: 420px;
+  margin-top: 20px;
+  background: #1A1820;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* ===== アニメーション（Intersection Observer用） ===== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.7s ease;
+}
+
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
