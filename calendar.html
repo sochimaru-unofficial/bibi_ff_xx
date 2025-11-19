@@ -8,17 +8,39 @@
 </head>
 <body>
 
-  <div id="container">
-    <header>
-      <h1>配信カレンダー</h1>
-      <div id="month-control">
+  <div id="layout">
+
+    <!-- 左パネル -->
+    <aside id="side-panel">
+      <h2>今月の配信まとめ</h2>
+
+      <div class="stat-block">
+        <div class="stat-title">今月の総配信時間</div>
+        <div id="month-total-time" class="stat-value">-</div>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-title">今月の配信回数</div>
+        <div id="month-count" class="stat-value">-</div>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-title">配信シリーズ</div>
+        <ul id="series-list"></ul>
+      </div>
+    </aside>
+
+    <!-- 右側：カレンダー -->
+    <main id="main">
+      <header id="month-header">
         <button id="prev-month">◀</button>
         <span id="current-month-label"></span>
         <button id="next-month">▶</button>
-      </div>
-    </header>
+      </header>
 
-    <section id="calendar"></section>
+      <section id="calendar"></section>
+    </main>
+
   </div>
 
   <script src="calendar.js"></script>
