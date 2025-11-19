@@ -149,20 +149,32 @@ function setupToggleButtons() {
   });
 }
 
-/* toggle-body の状態リセット */
 function resetToggleBodies() {
   const bodies = document.querySelectorAll(".toggle-body");
   const buttons = document.querySelectorAll(".toggle-btn");
 
   bodies.forEach(b => {
+
+    if (
+      b.id === "total-graph-time-body" ||
+      b.id === "total-graph-count-body" ||
+      b.id === "total-summary-body"
+    ) {
+      // 透明化だけ戻す
+      b.classList.remove("show-graph");
+      return;
+    }
+
     b.classList.add("collapsed");
     b.classList.remove("blow");
   });
 
+  // ボタンもリセット
   buttons.forEach(btn => {
     btn.textContent = "表示";
   });
 }
+
 
 /* パネル内の fade-slide を再度 show にする（タブ切替用） */
 function triggerFadeIn(panel) {
