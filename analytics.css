@@ -358,6 +358,12 @@ body {
 }
 
 /* ▼ グラフフェードイン */
+.graph-body {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  height: auto; /* collapse禁止：Chart.js対策 */
+}
+
 .fade-graph {
   opacity: 0;
   transition: opacity 0.6s ease;
@@ -367,11 +373,10 @@ body {
 }
 
 .hidden-graph {
-  opacity: 0 !important;
-  transition: opacity 0.6s ease;
+  opacity: 0;
 }
 
 .hidden-graph.show-graph {
-  opacity: 1 !important;
+  opacity: 1;
 }
 
