@@ -1,99 +1,142 @@
 body {
   margin: 0;
-  padding: 20px;
+  padding: 0;
   background: #121217;
   color: #EDEAF5;
   font-family: "Segoe UI", "Hiragino Sans", sans-serif;
+}
+
+/* レイアウト：左2・右8 */
+#layout {
   display: flex;
-  justify-content: center;
+  height: 100vh;
 }
 
-#container {
-  width: 100%;
-  max-width: 1280px;
+/* ===== 左パネル ===== */
+#side-panel {
+  width: 22%;
+  background: #18161E;
+  padding: 20px;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.5);
+  border-right: 2px solid #8A4FB7;
 }
 
-header h1 {
-  font-size: 1.8rem;
+#side-panel h2 {
   color: #D7A7E9;
-  text-shadow: 0 0 6px rgba(215, 167, 233, 0.4);
+  margin-bottom: 20px;
+  font-size: 1.4rem;
 }
 
-#month-control {
+.stat-block {
+  margin-bottom: 25px;
+}
+
+.stat-title {
+  font-size: 1rem;
+  color: #C5BAD5;
+}
+
+.stat-value {
+  margin-top: 4px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #EDEAF5;
+}
+
+#series-list li {
+  padding: 4px 0;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#series-list li:hover {
+  color: #D7A7E9;
+}
+
+/* ===== カレンダー部分 ===== */
+#main {
+  width: 78%;
+  padding: 20px;
+}
+
+/* 月移動ヘッダー */
+#month-header {
   display: flex;
   align-items: center;
-  margin: 10px 0 20px 0;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
-#month-control button {
+#month-header button {
   background: #1D1A22;
   color: #EDEAF5;
   border: 1px solid #8A4FB7;
   padding: 5px 12px;
   border-radius: 6px;
-  font-size: 1rem;
   cursor: pointer;
 }
 
-#month-control button:hover {
+#month-header button:hover {
   border-color: #D7A7E9;
 }
 
 #current-month-label {
   flex: 1;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   color: #D7A7E9;
 }
 
-/* カレンダー本体 */
+/* カレンダーグリッド */
 #calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 /* 曜日ラベル */
 .weekday {
   text-align: center;
   font-weight: bold;
-  padding: 8px 0;
+  padding: 6px 0;
   color: #C5BAD5;
+  font-size: 0.9rem;
 }
 
-/* 日付セル */
+/* 日付セル（コンパクト） */
 .day {
-  min-height: 120px;
-  padding: 8px;
+  min-height: 95px;
+  padding: 5px;
   background: #1D1A22;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid rgba(138, 79, 183, 0.3);
-  display: flex;
-  flex-direction: column;
-}
-
-.day-number {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #D7A7E9;
-}
-
-/* 配信タイトル */
-.event-item {
-  margin-top: 5px;
-  padding: 4px;
-  background: #1A1920;
-  border-radius: 6px;
-  border: 1px solid rgba(138, 79, 183, 0.4);
   font-size: 0.85rem;
+  position: relative;
+}
+
+/* 日付数字 */
+.day-number {
+  font-weight: bold;
+  color: #D7A7E9;
+  margin-bottom: 4px;
+}
+
+/* イベントカード（見やすくした） */
+.event-item {
+  background: #292639;
+  border-radius: 6px;
+  border: 1px solid rgba(215,167,233,0.4);
+  padding: 3px 4px;
+  margin-top: 3px;
+  font-size: 0.75rem;
+}
+
+.event-item:hover {
+  background: #3A3350;
+  border-color: #D7A7E9;
 }
 
 .event-item a {
-  color: #A678FF;
+  color: #EDEAF5;
   text-decoration: none;
-}
-
-.event-item a:hover {
-  color: #D7A7E9;
 }
