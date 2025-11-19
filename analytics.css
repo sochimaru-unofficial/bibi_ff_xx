@@ -1,121 +1,269 @@
-/* ===== 共通 ===== */
+/* 基本 */
 body {
   margin: 0;
   padding: 0;
-  background: #121217;
-  color: #EDEAF5;
+  background: #050514;
+  color: #F9FAFB;
   font-family: "Segoe UI", "Hiragino Sans", sans-serif;
 }
 
-section {
-  padding: 50px 8%;
+main {
+  padding-bottom: 60px;
 }
 
-/* ===== Hero ===== */
+.section {
+  padding: 40px 7%;
+}
+
+/* ヒーロー */
 .hero {
+  padding: 70px 7% 50px;
+  background: radial-gradient(circle at top, #7C3AED, #050514);
   text-align: center;
-  padding: 80px 0;
-  background: linear-gradient(180deg, #1A1720, #121217);
 }
 
 .hero h1 {
-  font-size: 2.2rem;
-  margin-bottom: 12px;
-  color: #D7A7E9;
-  text-shadow: 0 0 8px rgba(215,167,233,0.5);
+  font-size: 2.6rem;
+  margin-bottom: 10px;
+  color: #FEF3C7; /* 明るいゴールド寄り */
+  text-shadow: 0 0 14px rgba(252, 211, 77, 0.8);
 }
 
 .hero p {
   font-size: 1.1rem;
-  color: #C5BAD5;
+  color: #E5E7EB;
 }
 
-/* ===== 全体統計カード ===== */
+/* タブ */
+#series-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 7% 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+  background: #050514;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #111827;
+  color: #E5E7EB;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.tab:hover {
+  background: #1F2937;
+  transform: translateY(-1px);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #FBBF24, #F97316);
+  color: #111827;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
+}
+
+/* タブパネル表示制御 */
+.tab-panel.hidden {
+  display: none;
+}
+
+/* 見出し */
+.section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+  color: #FBBF24;
+}
+
+.section h3 {
+  font-size: 1.3rem;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  color: #E5E7EB;
+}
+
+/* 目次 */
+.toc-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc-list li {
+  margin: 6px 0;
+}
+
+.toc-list a {
+  color: #A5B4FC;
+  text-decoration: none;
+}
+
+.toc-list a:hover {
+  text-decoration: underline;
+}
+
+/* ランキングカード & シリーズトップ3カード */
+.ranking-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.ranking-card {
+  background: #0B1120;
+  border-radius: 12px;
+  border: 1px solid rgba(129, 140, 248, 0.7);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.7);
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  max-width: 360px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.rank-badge {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #111827;
+  background: linear-gradient(135deg, #FBBF24, #F97316);
+  border-radius: 999px;
+  padding: 4px 10px;
+  text-align: center;
+}
+
+.ranking-thumb {
+  width: 120px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.ranking-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.ranking-title {
+  font-weight: bold;
+  color: #E5E7EB;
+}
+
+.ranking-meta {
+  color: #D1D5DB;
+  font-size: 0.8rem;
+}
+
+/* シリーズ統計カード群 */
 .stat-cards {
   display: flex;
-  gap: 20px;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
 .stat-card {
+  background: #0B1120;
+  border-radius: 12px;
+  border: 1px solid rgba(129, 140, 248, 0.7);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+  padding: 16px;
+  min-width: 200px;
   flex: 1;
-  min-width: 240px;
-  background: #1C1A23;
-  padding: 25px;
-  border-radius: 14px;
-  border: 1px solid rgba(138, 79, 183, 0.4);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-  transition: transform 0.3s ease;
 }
 
-.stat-card:hover {
-  transform: translateY(-6px);
+.stat-card.wide {
+  flex-basis: 100%;
 }
 
-.stat-title {
-  font-size: 1.1rem;
-  color: #C5BAD5;
-  margin-bottom: 8px;
+.stat-label {
+  font-size: 0.9rem;
+  color: #9CA3AF;
+  margin-bottom: 6px;
 }
 
 .stat-value {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  color: #EDEAF5;
 }
 
-/* ===== シリーズ別カード ===== */
-#series-cards {
+/* まとめカード */
+.summary-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
 }
 
-.series-card {
-  width: calc(33% - 20px);
-  min-width: 280px;
-  background: #1A1820;
-  padding: 20px;
+.summary-card {
+  background: #0B1120;
   border-radius: 12px;
-  border: 1px solid rgba(138,79,183,0.4);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  transition: transform 0.3s ease;
+  border: 1px solid rgba(129, 140, 248, 0.7);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+  padding: 18px;
+  flex: 1;
+  min-width: 220px;
 }
 
-.series-card:hover {
-  transform: translateY(-5px);
-}
-
-.series-title {
-  font-size: 1.3rem;
-  margin-bottom: 10px;
-  color: #D7A7E9;
-}
-
-.series-item {
+.summary-title {
   font-size: 1rem;
-  margin: 4px 0;
-  color: #C5BAD5;
+  color: #9CA3AF;
+  margin-bottom: 6px;
 }
 
-/* ===== グラフ ===== */
-canvas {
-  width: 100%;
-  max-height: 420px;
+.summary-value {
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+/* グラフ */
+.chart-block {
   margin-top: 20px;
-  background: #1A1820;
+}
+
+.chart-block canvas {
+  background: #020617;
   border-radius: 12px;
-  padding: 20px;
+  padding: 10px;
 }
 
-/* ===== アニメーション（Intersection Observer用） ===== */
-.fade-up {
+/* スクロールアニメーション */
+.fade-slide {
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s ease;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.fade-up.show {
+.fade-slide.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* タブ切り替えの軽いアニメ */
+.tab-panel {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tab-panel.tab-switching {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* レスポンシブ軽め対応 */
+@media (max-width: 900px) {
+  .section {
+    padding: 30px 5%;
+  }
+  .series-card {
+    width: 100%;
+  }
+  .ranking-card {
+    max-width: 100%;
+  }
 }
