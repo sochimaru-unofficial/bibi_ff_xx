@@ -17,7 +17,7 @@ body {
 
 /* ===== 左パネル（10%＝1割） ===== */
 #side-panel {
-  width: 10%;
+  width: 15%;
   background: #18161E;
   padding: 18px;
   box-shadow: 4px 0 12px rgba(0,0,0,0.5);
@@ -59,7 +59,7 @@ body {
 
 /* ===== カレンダー（右側90%＝9割） ===== */
 #main {
-  width: 90%;
+  width: 85%;
   padding: 20px;
   display: flex;
   flex-direction: column;
