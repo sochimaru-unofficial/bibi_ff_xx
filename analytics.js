@@ -22,7 +22,11 @@ async function main() {
 
   setupTabs();
   setupToggleButtons();
-  setupObserver();
+
+  // 初回：全 fade-slide を一旦表示状態にしておく（透明バグ防止）
+  document.querySelectorAll(".fade-slide").forEach(el => {
+    el.classList.add("show");
+  });
 
   // デフォルトはトータルタブ
   renderTotalTab();
@@ -88,14 +92,24 @@ function switchTab(series) {
   const totalPanel = document.getElementById("tab-total");
   const seriesPanel = document.getElementById("tab-series");
 
+  // タブ切替時：全部の「表示エリア」をリセット
+  resetToggleBodies();
+
   if (series === "total") {
     totalPanel.classList.remove("hidden");
     seriesPanel.classList.add("hidden");
+
     renderTotalTab();
+
+    // トータル側のフェード系をもう一度表示状態に
+    triggerFadeIn(totalPanel);
   } else {
     totalPanel.classList.add("hidden");
     seriesPanel.classList.remove("hidden");
+
     renderSeriesTab(series);
+
+    triggerFadeIn(seriesPanel);
   }
 }
 
@@ -103,22 +117,57 @@ function switchTab(series) {
 
 function setupToggleButtons() {
   const buttons = document.querySelectorAll(".toggle-btn");
+
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.target;
       const body = document.getElementById(targetId);
       if (!body) return;
+
       const isCollapsed = body.classList.contains("collapsed");
+
       if (isCollapsed) {
+        // 表示する
         body.classList.remove("collapsed");
-        body.classList.add("blow");
+        body.classList.remove("blow"); // アニメ再適用のため一度消す
+        // 少し遅らせて blow クラスを付けると綺麗にアニメ
+        setTimeout(() => body.classList.add("blow"), 10);
         btn.textContent = "非表示";
+
+        // 中の fade-slide 要素も show を付けておく
+        body.querySelectorAll(".fade-slide").forEach(el => {
+          el.classList.add("show");
+        });
       } else {
+        // 非表示に戻す
         body.classList.add("collapsed");
         body.classList.remove("blow");
         btn.textContent = "表示";
       }
     });
+  });
+}
+
+/* toggle-body の状態リセット */
+function resetToggleBodies() {
+  const bodies = document.querySelectorAll(".toggle-body");
+  const buttons = document.querySelectorAll(".toggle-btn");
+
+  bodies.forEach(b => {
+    b.classList.add("collapsed");
+    b.classList.remove("blow");
+  });
+
+  buttons.forEach(btn => {
+    btn.textContent = "表示";
+  });
+}
+
+/* パネル内の fade-slide を再度 show にする（タブ切替用） */
+function triggerFadeIn(panel) {
+  const targets = panel.querySelectorAll(".fade-slide");
+  targets.forEach(el => {
+    el.classList.add("show");
   });
 }
 
@@ -181,17 +230,15 @@ function renderTotalRankings(seriesStats) {
   // 最多配信シリーズ（回数）
   const byCount = seriesStats.slice().sort((a,b) => b.count - a.count).slice(0, 3);
   byCount.forEach((st, idx) => {
-    mostCountBox.appendChild(
-      createSeriesRankingCard(st, idx, "配信回数", `${st.count}回`)
-    );
+    const card = createSeriesRankingCard(st, idx, "配信回数", `${st.count}回`);
+    mostCountBox.appendChild(card);
   });
 
   // 最長配信時間シリーズ
   const bySec = seriesStats.slice().sort((a,b) => b.sec - a.sec).slice(0, 3);
   bySec.forEach((st, idx) => {
-    mostTimeBox.appendChild(
-      createSeriesRankingCard(st, idx, "総配信時間", formatHMS(st.sec))
-    );
+    const card = createSeriesRankingCard(st, idx, "総配信時間", formatHMS(st.sec));
+    mostTimeBox.appendChild(card);
   });
 
   // 最長期間シリーズ（年なし）
@@ -202,9 +249,13 @@ function renderTotalRankings(seriesStats) {
     const min = new Date(Math.min(...dates));
     const max = new Date(Math.max(...dates));
     const periodText = `${formatDateMD(min)} 〜 ${formatDateMD(max)}`;
-    longestPeriodBox.appendChild(
-      createSeriesRankingCard(st, idx, "期間", periodText)
-    );
+    const card = createSeriesRankingCard(st, idx, "期間", periodText);
+    longestPeriodBox.appendChild(card);
+  });
+
+  // 作られたランキングカードにも show を付けておく
+  document.querySelectorAll("#total-rankings .ranking-card").forEach(card => {
+    card.classList.add("show");
   });
 }
 
@@ -343,6 +394,16 @@ function renderTotalCharts(seriesStats) {
     },
     options: countOptions
   });
+
+  // グラフもぼわん
+  const timeCanvas = document.getElementById("series-time-bar");
+  const countCanvas = document.getElementById("series-count-bar");
+  timeCanvas.classList.remove("blow");
+  countCanvas.classList.remove("blow");
+  setTimeout(() => {
+    timeCanvas.classList.add("blow");
+    countCanvas.classList.add("blow");
+  }, 10);
 }
 
 /* ========= シリーズタブ ========= */
@@ -386,7 +447,13 @@ function renderSeriesTab(series) {
   const top3Box = document.getElementById("series-top3-cards");
   top3Box.innerHTML = "";
   sortedByDuration.slice(0, 3).forEach((item, idx) => {
-    top3Box.appendChild(createEpisodeRankingCard(item, idx));
+    const card = createEpisodeRankingCard(item, idx);
+    top3Box.appendChild(card);
+  });
+
+  // シリーズ内TOP3カードにも show を付けておく
+  document.querySelectorAll("#series-top3-section .ranking-card").forEach(card => {
+    card.classList.add("show");
   });
 }
 
@@ -429,21 +496,6 @@ function createEpisodeRankingCard(item, index) {
   });
 
   return card;
-}
-
-/* ========= スクロールアニメ ========= */
-
-function setupObserver() {
-  const targets = document.querySelectorAll(".fade-slide");
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("show");
-      }
-    });
-  }, { threshold: 0.2 });
-
-  targets.forEach(t => observer.observe(t));
 }
 
 /* 起動 */
