@@ -1,21 +1,4 @@
 const JSON_URL = "streams_combined.json";
-const SERIES_COLORS = {
-  FF1:  "#3BA3FF",
-  FF2:  "#D9473C",
-  FF3:  "#E0E0E0",
-  FF4:  "#6A4FBF",
-  FF5:  "#E35D9C",
-  FF6:  "#6F7A8A",
-  FF7:  "#C93131",
-  FF8:  "#7D2A35",
-  FF9:  "#D8A436",
-  FF10: "#4FC4E8",
-  FF12: "#D6C49E",
-  FF13: "#8DE8C0",
-  FF14: "#7F45D0",
-  FF15: "#1A23440",
-  FF16: "#A32020"
-};
 
 
 let allData = [];
