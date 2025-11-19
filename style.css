@@ -3,6 +3,7 @@ body {
   font-family: "Segoe UI", "Hiragino Sans", sans-serif;
   margin: 0;
   padding: 20px;
+  padding-top:60px;
   background: #121217;
   color: #EDEAF5;
   display: flex;
@@ -130,3 +131,4 @@ a:hover {
   background: rgba(0, 0, 0, 0.55);
   transform: translateY(-3px);
 }
+
