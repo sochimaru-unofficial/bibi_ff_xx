@@ -178,6 +178,8 @@ function renderTotalTab() {
   let totalCount = allData.length;
   const seriesStats = [];
 
+  let allDates = [];
+
   SERIES_LIST.forEach(s => {
     const list = groupedBySeries[s];
     if (!list || list.length === 0) return;
@@ -189,6 +191,8 @@ function renderTotalTab() {
     const min = new Date(Math.min(...dates));
     const max = new Date(Math.max(...dates));
     const periodMs = max - min;
+
+    allDates.push(...dates);
 
     const firstItem = list.slice().sort(
       (a,b) => new Date(a["配信日時"]) - new Date(b["配信日時"])
@@ -205,18 +209,25 @@ function renderTotalTab() {
     totalSec += sec;
   });
 
-  // まとめ
+  // まとめ（合計）
   document.getElementById("sum-total-time").textContent = formatHMS(totalSec);
   document.getElementById("sum-total-count").textContent = `${totalCount} 回`;
   const avgSec = totalCount ? Math.floor(totalSec / totalCount) : 0;
   document.getElementById("sum-avg-time").textContent = formatHMS(avgSec);
 
+  // 全体のプレイ期間
+  const min = new Date(Math.min(...allDates));
+  const max = new Date(Math.max(...allDates));
+  document.getElementById("sum-total-period").textContent =
+    `${formatDate(min)} 〜 ${formatDate(max)}`;
+
   // ランキング
   renderTotalRankings(seriesStats);
 
   // グラフ
-  (seriesStats);
+  renderTotalCharts(seriesStats);
 }
+
 
 function renderTotalRankings(seriesStats) {
   const mostCountBox = document.getElementById("ranking-most-count");
@@ -297,40 +308,9 @@ function renderTotalCharts(seriesStats) {
   const timeData = seriesStats.map(s => s.sec);
   const countData = seriesStats.map(s => s.count);
 
-  /* --- ▼▼ シリーズ別配信時間（棒グラフ） ▼▼ --- */
-
+  /* ▼ 時間棒グラフ ▼ */
   const ctxTime = document.getElementById("series-time-bar").getContext("2d");
   if (charts.timeBar) charts.timeBar.destroy();
-
-  const timeOptions = {
-    plugins: {
-      legend: { labels: { color: "#F9FAFB" } },
-      tooltip: {
-        callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${formatHMS(ctx.raw)}`
-        }
-      }
-    },
-    scales: {
-      x: {
-        ticks: { color: "#E5E7EB" },
-        grid: { color: "rgba(55,65,81,0.4)" }
-      },
-      y: {
-        ticks: {
-          color: "#E5E7EB",
-          stepSize: 36000,
-          callback: v => {
-            const h = Math.floor(v / 3600);
-            const m = Math.floor((v % 3600) / 60);
-            const s = v % 60;
-            return `${h}時間${m}分${s}秒`;
-          }
-        },
-        grid: { color: "rgba(55,65,81,0.4)" }
-      }
-    }
-  };
 
   charts.timeBar = new Chart(ctxTime, {
     type: "bar",
@@ -342,38 +322,27 @@ function renderTotalCharts(seriesStats) {
         backgroundColor: "#F59E0B"
       }]
     },
-    options: timeOptions
-  });
-
-  /* --- ▼▼ シリーズ別配信回数 ▼▼ --- */
-
-  const ctxCount = document.getElementById("series-count-bar").getContext("2d");
-  if (charts.countBar) charts.countBar.destroy();
-
-  const countOptions = {
-    plugins: {
-      legend: { labels: { color: "#F9FAFB" } },
-      tooltip: {
-        callbacks: {
-          label: ctx => `${ctx.dataset.label}: ${ctx.raw}回`
+    options: {
+      plugins: {
+        legend: { labels: { color: "#F9FAFB" } },
+        tooltip: { callbacks: { label: c => formatHMS(c.raw) } }
+      },
+      scales: {
+        x: { ticks: { color: "#E5E7EB" } },
+        y: {
+          ticks: {
+            color: "#E5E7EB",
+            stepSize: 36000,
+            callback: v => formatHMS(v)
+          }
         }
       }
-    },
-    scales: {
-      x: {
-        ticks: { color: "#E5E7EB" },
-        grid: { color: "rgba(55,65,81,0.4)" }
-      },
-      y: {
-        ticks: {
-          color: "#E5E7EB",
-          stepSize: 1,
-          callback: value => `${value}回`
-        },
-        grid: { color: "rgba(55,65,81,0.4)" }
-      }
     }
-  };
+  });
+
+  /* ▼ 回数棒グラフ ▼ */
+  const ctxCount = document.getElementById("series-count-bar").getContext("2d");
+  if (charts.countBar) charts.countBar.destroy();
 
   charts.countBar = new Chart(ctxCount, {
     type: "bar",
@@ -385,22 +354,39 @@ function renderTotalCharts(seriesStats) {
         backgroundColor: "#6366F1"
       }]
     },
-    options: countOptions
+    options: {
+      plugins: {
+        legend: { labels: { color: "#F9FAFB" } },
+        tooltip: { callbacks: { label: c => `${c.raw}回` } }
+      },
+      scales: {
+        x: { ticks: { color: "#E5E7EB" } },
+        y: {
+          ticks: {
+            color: "#E5E7EB",
+            stepSize: 1,
+            callback: v => `${v}回`
+          }
+        }
+      }
+    }
   });
 
-  /* --- ▼▼ グラフフェードイン ▼▼ --- */
-
+  /* ▼ フェードイン ▼ */
   const timeBody = document.getElementById("total-graph-time-body");
   const countBody = document.getElementById("total-graph-count-body");
 
-  timeBody.classList.remove("show");
-  countBody.classList.remove("show");
+  timeBody.style.opacity = 0;
+  countBody.style.opacity = 0;
 
-  setTimeout(() => {
-    timeBody.classList.add("show");
-    countBody.classList.add("show");
-  }, 20);
+  requestAnimationFrame(() => {
+    timeBody.style.transition = "opacity 0.6s ease";
+    countBody.style.transition = "opacity 0.6s ease";
+    timeBody.style.opacity = 1;
+    countBody.style.opacity = 1;
+  });
 }
+
 
 /* ========= シリーズタブ ========= */
 
