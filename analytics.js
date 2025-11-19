@@ -297,21 +297,17 @@ function renderTotalCharts(seriesStats) {
   const timeData = seriesStats.map(s => s.sec);
   const countData = seriesStats.map(s => s.count);
 
-  // シリーズ別配信時間（棒グラフ）
+  /* --- ▼▼ シリーズ別配信時間（棒グラフ） ▼▼ --- */
+
   const ctxTime = document.getElementById("series-time-bar").getContext("2d");
   if (charts.timeBar) charts.timeBar.destroy();
 
   const timeOptions = {
     plugins: {
-      legend: {
-        labels: { color: "#F9FAFB" }
-      },
+      legend: { labels: { color: "#F9FAFB" } },
       tooltip: {
         callbacks: {
-          label: ctx => {
-            const sec = ctx.raw;
-            return `${ctx.dataset.label}: ${formatHMS(sec)}`;
-          }
+          label: ctx => `${ctx.dataset.label}: ${formatHMS(ctx.raw)}`
         }
       }
     },
@@ -323,11 +319,11 @@ function renderTotalCharts(seriesStats) {
       y: {
         ticks: {
           color: "#E5E7EB",
-          stepSize: 36000, // 10時間刻み（秒）
-          callback: value => {
-            const h = Math.floor(value / 3600);
-            const m = Math.floor((value % 3600) / 60);
-            const s = value % 60;
+          stepSize: 36000, // 10時間刻み
+          callback: v => {
+            const h = Math.floor(v / 3600);
+            const m = Math.floor((v % 3600) / 60);
+            const s = v % 60;
             return `${h}時間${m}分${s}秒`;
           }
         },
@@ -349,20 +345,18 @@ function renderTotalCharts(seriesStats) {
     options: timeOptions
   });
 
-  // シリーズ別配信回数（棒グラフ）
+
+  /* --- ▼▼ シリーズ別配信回数（棒グラフ） ▼▼ --- */
+
   const ctxCount = document.getElementById("series-count-bar").getContext("2d");
   if (charts.countBar) charts.countBar.destroy();
 
   const countOptions = {
     plugins: {
-      legend: {
-        labels: { color: "#F9FAFB" }
-      },
+      legend: { labels: { color: "#F9FAFB" } },
       tooltip: {
         callbacks: {
-          label: ctx => {
-            return `${ctx.dataset.label}: ${ctx.raw}回`;
-          }
+          label: ctx => `${ctx.dataset.label}: ${ctx.raw}回`
         }
       }
     },
@@ -375,7 +369,7 @@ function renderTotalCharts(seriesStats) {
         ticks: {
           color: "#E5E7EB",
           stepSize: 1,
-          callback: value => `${value}回`
+          callback: v => `${v}回`
         },
         grid: { color: "rgba(55,65,81,0.4)" }
       }
@@ -395,16 +389,24 @@ function renderTotalCharts(seriesStats) {
     options: countOptions
   });
 
-  // グラフもぼわん
-  const timeCanvas = document.getElementById("series-time-bar");
-  const countCanvas = document.getElementById("series-count-bar");
-  timeCanvas.classList.remove("blow");
-  countCanvas.classList.remove("blow");
+
+  /* --- ▼▼ グラフ表示アニメを他と統一（ぼわん） ▼▼ --- */
+
+  // グラフが入っている toggle-body を取得
+  const timeBody = document.getElementById("total-graph-time-body");
+  const countBody = document.getElementById("total-graph-count-body");
+
+  // まず blow 削除（連続切り替え用）
+  timeBody.classList.remove("blow");
+  countBody.classList.remove("blow");
+
+  // 次のフレームで blow を再追加してアニメ発火
   setTimeout(() => {
-    timeCanvas.classList.add("blow");
-    countCanvas.classList.add("blow");
-  }, 10);
+    timeBody.classList.add("blow");
+    countBody.classList.add("blow");
+  }, 20);
 }
+
 
 /* ========= シリーズタブ ========= */
 
