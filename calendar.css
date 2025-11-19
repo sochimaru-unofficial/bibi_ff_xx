@@ -5,12 +5,14 @@ body {
   color: #EDEAF5;
   font-family: "Segoe UI", "Hiragino Sans", sans-serif;
   overflow: hidden; /* ▶ スクロール禁止 */
+  overflow-y: visible; 
 }
 
 /* 画面全体（縦ゆったり） */
 #layout {
   display: flex;
   height: 94vh; /* ▶ 少し余裕を持たせた高さ */
+  overflow: hidden; 
 }
 
 /* ===== 左パネル（10%＝1割） ===== */
