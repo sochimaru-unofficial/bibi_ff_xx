@@ -3,143 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>配信分析ダッシュボード</title>
+  <title>戯びび ファイナルファンタジーシリーズのまとめ</title>
   <link rel="stylesheet" href="analytics.css">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-  <!-- ヒーロー -->
-  <section class="hero fade-slide">
-    <h1>配信分析ダッシュボード</h1>
-    <p>FFシリーズ配信の記録を、まとめて可視化するページだよ！</p>
-  </section>
+  <div class="page-bg">
+    <div class="container">
 
-  <!-- タブ -->
-  <nav id="series-tabs" class="fade-slide">
-    <button class="tab active" data-series="total">トータル</button>
-    <button class="tab" data-series="FF1">FF1</button>
-    <button class="tab" data-series="FF2">FF2</button>
-    <button class="tab" data-series="FF3">FF3</button>
-    <button class="tab" data-series="FF4">FF4</button>
-    <button class="tab" data-series="FF5">FF5</button>
-    <button class="tab" data-series="FF6">FF6</button>
-    <button class="tab" data-series="FF7">FF7</button>
-    <button class="tab" data-series="FF8">FF8</button>
-    <button class="tab" data-series="FF9">FF9</button>
-    <button class="tab" data-series="FF10">FF10</button>
-    <button class="tab" data-series="FF12">FF12</button>
-    <button class="tab" data-series="FF13">FF13</button>
-    <button class="tab" data-series="FF14">FF14</button>
-    <button class="tab" data-series="FF15">FF15</button>
-    <button class="tab" data-series="FF16">FF16</button>
-  </nav>
-
-  <main id="analytics-main">
-
-    <!-- ▼ トータルタブ用コンテンツ -->
-    <section id="tab-total" class="tab-panel">
-
-      <!-- 目次 -->
-      <section id="total-toc" class="section fade-slide">
-        <h2>目次</h2>
-        <ul class="toc-list">
-          <li><a href="#total-rankings">ランキング</a></li>
-          <li><a href="#total-graphs">グラフシリーズ</a></li>
-          <li><a href="#total-summary">まとめ</a></li>
-        </ul>
+      <!-- ヒーロー（タイトル） -->
+      <section class="hero">
+        <h1>戯びび ファイナルファンタジーシリーズダッシュボード</h1>
+        <p>FFシリーズ配信のまとめ</p>
       </section>
 
-      <!-- ランキング -->
-      <section id="total-rankings" class="section fade-slide">
-        <h2>ランキング（シリーズ別 TOP3）</h2>
-
-        <h3>最多配信シリーズ</h3>
-        <div id="ranking-most-count" class="ranking-cards"></div>
-
-        <h3>最長配信時間シリーズ</h3>
-        <div id="ranking-most-time" class="ranking-cards"></div>
-
-        <h3>最長期間シリーズ</h3>
-        <div id="ranking-longest-period" class="ranking-cards"></div>
-      </section>
-
-      <!-- グラフ -->
-      <section id="total-graphs" class="section fade-slide">
-        <h2>グラフシリーズ</h2>
-
-        <div class="chart-block">
-          <h3>シリーズ別配信時間</h3>
-          <canvas id="series-time-bar"></canvas>
+      <!-- タブ（2段） -->
+      <nav id="series-tabs">
+        <div class="tab-row">
+          <button class="tab active" data-series="total">トータル</button>
+          <button class="tab" data-series="FF1">FF1</button>
+          <button class="tab" data-series="FF2">FF2</button>
+          <button class="tab" data-series="FF3">FF3</button>
+          <button class="tab" data-series="FF4">FF4</button>
+          <button class="tab" data-series="FF5">FF5</button>
+          <button class="tab" data-series="FF6">FF6</button>
+          <button class="tab" data-series="FF7">FF7</button>
         </div>
-
-        <div class="chart-block">
-          <h3>シリーズ別配信回数</h3>
-          <canvas id="series-count-bar"></canvas>
+        <div class="tab-row">
+          <button class="tab" data-series="FF8">FF8</button>
+          <button class="tab" data-series="FF9">FF9</button>
+          <button class="tab" data-series="FF10">FF10</button>
+          <button class="tab" data-series="FF12">FF12</button>
+          <button class="tab" data-series="FF13">FF13</button>
+          <button class="tab" data-series="FF14">FF14</button>
+          <button class="tab" data-series="FF15">FF15</button>
+          <button class="tab" data-series="FF16">FF16</button>
         </div>
-      </section>
+      </nav>
 
-      <!-- まとめ -->
-      <section id="total-summary" class="section fade-slide">
-        <h2>まとめ</h2>
-        <div class="summary-cards">
-          <div class="summary-card">
-            <div class="summary-title">総配信時間</div>
-            <div class="summary-value" id="sum-total-time">--</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-title">総配信回数</div>
-            <div class="summary-value" id="sum-total-count">--</div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-title">平均配信時間</div>
-            <div class="summary-value" id="sum-avg-time">--</div>
-          </div>
-        </div>
-      </section>
+      <main id="analytics-main">
 
-    </section>
+        <!-- ▼ トータルタブ用コンテンツ -->
+        <section id="tab-total" class="tab-panel">
 
-    <!-- ▼ 各シリーズタブ用コンテンツ -->
-    <section id="tab-series" class="tab-panel hidden">
+          <!-- 目次（常に表示） -->
+          <section id="total-toc" class="section fade-slide">
+            <h2>目次</h2>
+            <ul class="toc-list">
+              <li><a href="#total-rankings">ランキング</a></li>
+              <li><a href="#total-graphs">グラフシリーズ</a></li>
+              <li><a href="#total-summary">まとめ</a></li>
+            </ul>
+          </section>
 
-      <!-- シリーズ統計 -->
-      <section id="series-summary" class="section fade-slide">
-        <h2 id="series-title-heading">シリーズ別統計</h2>
-        <div class="stat-cards">
-          <div class="stat-card">
-            <div class="stat-label">総配信時間</div>
-            <div class="stat-value" id="series-total-time">--</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">総配信回数</div>
-            <div class="stat-value" id="series-total-count">--</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">最長配信時間</div>
-            <div class="stat-value" id="series-max-time">--</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">平均配信時間</div>
-            <div class="stat-value" id="series-avg-time">--</div>
-          </div>
-          <div class="stat-card wide">
-            <div class="stat-label">プレイ期間</div>
-            <div class="stat-value" id="series-period">--</div>
-          </div>
-        </div>
-      </section>
+          <!-- ランキング -->
+          <section id="total-rankings" class="section">
+            <div class="section-header">
+              <h2>ランキング</h2>
+              <button class="toggle-btn" data-target="total-rankings-body">表示</button>
+            </div>
+            <div id="total-rankings-body" class="toggle-body collapsed fade-slide">
+              <h3>最多配信シリーズ</h3>
+              <div id="ranking-most-count" class="ranking-cards"></div>
 
-      <!-- シリーズ内 最長配信ランキング -->
-      <section id="series-top3" class="section fade-slide">
-        <h2>最長配信ランキング TOP3</h2>
-        <div id="series-top3-cards" class="ranking-cards"></div>
-      </section>
+              <h3>最長配信時間シリーズ</h3>
+              <div id="ranking-most-time" class="ranking-cards"></div>
 
-    </section>
+              <h3>最長期間シリーズ</h3>
+              <div id="ranking-longest-period" class="ranking-cards"></div>
+            </div>
+          </section>
 
-  </main>
+          <!-- グラフシリーズ -->
+          <section id="total-graphs" class="section">
+            <div class="section-header">
+              <h2>グラフシリーズ</h2>
+              <button class="toggle-btn" data-target="total-graphs-body">表示</button>
+            </div>
+            <div id="total-graphs-body" class="toggle-body collapsed fade-slide">
+              <div class="chart-block">
+                <h3>シリーズ別配信時間</h3>
+                <canvas id="series-time-bar"></canvas>
+              </div>
+
+              <div class="chart-block">
+                <h3>シリーズ別配信回数</h3>
+                <canvas id="series-count-bar"></canvas>
+              </div>
+            </div>
+          </section>
+
+          <!-- まとめ -->
+          <section id="total-summary" class="section">
+            <div class="section-header">
+              <h2>まとめ</h2>
+              <button class="toggle-btn" data-target="total-summary-body">表示</button>
+            </div>
+            <div id="total-summary-body" class="toggle-body collapsed fade-slide">
+              <div class="summary-cards">
+                <div class="summary-card">
+                  <div class="summary-title">総配信時間</div>
+                  <div class="summary-value" id="sum-total-time">--</div>
+                </div>
+                <div class="summary-card">
+                  <div class="summary-title">総配信回数</div>
+                  <div class="summary-value" id="sum-total-count">--</div>
+                </div>
+                <div class="summary-card">
+                  <div class="summary-title">平均配信時間</div>
+                  <div class="summary-value" id="sum-avg-time">--</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </section>
+
+        <!-- ▼ シリーズ別タブ用コンテンツ -->
+        <section id="tab-series" class="tab-panel hidden">
+
+          <!-- シリーズ統計 -->
+          <section id="series-summary-section" class="section">
+            <div class="section-header">
+              <h2 id="series-title-heading">シリーズ別統計</h2>
+              <button class="toggle-btn" data-target="series-summary-body">表示</button>
+            </div>
+            <div id="series-summary-body" class="toggle-body collapsed fade-slide">
+              <div class="stat-cards">
+                <div class="stat-card">
+                  <div class="stat-label">総配信時間</div>
+                  <div class="stat-value" id="series-total-time">--</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">総配信回数</div>
+                  <div class="stat-value" id="series-total-count">--</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">最長配信時間</div>
+                  <div class="stat-value" id="series-max-time">--</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">平均配信時間</div>
+                  <div class="stat-value" id="series-avg-time">--</div>
+                </div>
+                <div class="stat-card stat-card-wide">
+                  <div class="stat-label">プレイ期間</div>
+                  <div class="stat-value" id="series-period">--</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 最長配信ランキング -->
+          <section id="series-top3-section" class="section">
+            <div class="section-header">
+              <h2>最長配信ランキング TOP3</h2>
+              <button class="toggle-btn" data-target="series-top3-body">表示</button>
+            </div>
+            <div id="series-top3-body" class="toggle-body collapsed fade-slide">
+              <div id="series-top3-cards" class="ranking-cards"></div>
+            </div>
+          </section>
+
+        </section>
+
+      </main>
+
+    </div>
+  </div>
 
   <script src="analytics.js"></script>
 </body>
