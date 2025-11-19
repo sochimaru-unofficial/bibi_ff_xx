@@ -1,4 +1,22 @@
 const JSON_URL = "streams_combined.json";
+const SERIES_COLORS = {
+  FF1:  "#3BA3FF",
+  FF2:  "#D9473C",
+  FF3:  "#E0E0E0",
+  FF4:  "#6A4FBF",
+  FF5:  "#E35D9C",
+  FF6:  "#6F7A8A",
+  FF7:  "#C93131",
+  FF8:  "#7D2A35",
+  FF9:  "#D8A436",
+  FF10: "#4FC4E8",
+  FF12: "#D6C49E",
+  FF13: "#8DE8C0",
+  FF14: "#7F45D0",
+  FF15: "#1A23440",
+  FF16: "#A32020"
+};
+
 
 let allData = [];
 let groupedBySeries = {};
@@ -301,12 +319,12 @@ function createSeriesRankingCard(stat, index, label, value) {
   return card;
 }
 
-/* ========= トータルグラフ ========= */
-
 function renderTotalCharts(seriesStats) {
   const labels = seriesStats.map(s => s.series);
   const timeData = seriesStats.map(s => s.sec);
   const countData = seriesStats.map(s => s.count);
+
+  const colors = labels.map(s => SERIES_COLORS[s] || "#888");
 
   /* ▼ 時間棒グラフ ▼ */
   const ctxTime = document.getElementById("series-time-bar").getContext("2d");
@@ -319,7 +337,7 @@ function renderTotalCharts(seriesStats) {
       datasets: [{
         label: "シリーズ別配信時間",
         data: timeData,
-        backgroundColor: "#F59E0B"
+        backgroundColor: colors
       }]
     },
     options: {
@@ -351,7 +369,7 @@ function renderTotalCharts(seriesStats) {
       datasets: [{
         label: "シリーズ別配信回数",
         data: countData,
-        backgroundColor: "#6366F1"
+        backgroundColor: colors
       }]
     },
     options: {
@@ -372,18 +390,16 @@ function renderTotalCharts(seriesStats) {
     }
   });
 
-  /* ▼ フェードイン ▼ */
+  /* ▼ 表示ボタン押したらフェードイン */
   const timeBody = document.getElementById("total-graph-time-body");
   const countBody = document.getElementById("total-graph-count-body");
 
-  timeBody.style.opacity = 0;
-  countBody.style.opacity = 0;
+  timeBody.classList.remove("show-graph");
+  countBody.classList.remove("show-graph");
 
   requestAnimationFrame(() => {
-    timeBody.style.transition = "opacity 0.6s ease";
-    countBody.style.transition = "opacity 0.6s ease";
-    timeBody.style.opacity = 1;
-    countBody.style.opacity = 1;
+    timeBody.classList.add("show-graph");
+    countBody.classList.add("show-graph");
   });
 }
 
