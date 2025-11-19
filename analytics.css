@@ -346,3 +346,23 @@ body {
     flex-direction: column;
   }
 }
+
+/* ▼ 中央揃え表示ボタン */
+.toggle-center {
+  text-align: center;
+  margin: 8px 0 16px;
+}
+.toggle-center .toggle-btn {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+/* ▼ グラフフェードイン */
+.fade-graph {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.fade-graph.show {
+  opacity: 1;
+}
+
