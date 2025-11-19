@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配信分析ダッシュボード</title>
+  <link rel="stylesheet" href="analytics.css">
+  <!-- Chart.js 読み込み -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- ===== Hero Section ===== -->
+  <section class="hero fade-up">
+    <h1>配信分析ダッシュボード</h1>
+    <p>全体統計・シリーズ別・グラフ分析をまとめた可視化ページ</p>
+  </section>
+
+  <!-- ===== ① 全体統計 ===== -->
+  <section class="section fade-up" id="global-stats">
+    <h2>全体の統計</h2>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-title">総配信時間</div>
+        <div class="stat-value" id="total-time">--</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-title">総配信回数</div>
+        <div class="stat-value" id="total-count">--</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-title">平均配信時間</div>
+        <div class="stat-value" id="avg-time">--</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ② シリーズ別分析 ===== -->
+  <section class="section fade-up" id="series-stats">
+    <h2>シリーズ別分析</h2>
+    <div id="series-cards"></div>
+  </section>
+
+  <!-- ===== ⑤ グラフ ===== -->
+  <section class="section fade-up">
+    <h2>シリーズ別 配信時間シェア</h2>
+    <canvas id="pie-chart"></canvas>
+  </section>
+
+  <section class="section fade-up">
+    <h2>月別 配信時間</h2>
+    <canvas id="bar-chart"></canvas>
+  </section>
+
+  <section class="section fade-up">
+    <h2>累計配信時間</h2>
+    <canvas id="line-chart"></canvas>
+  </section>
+
+  <script src="analytics.js"></script>
+</body>
+</html>
