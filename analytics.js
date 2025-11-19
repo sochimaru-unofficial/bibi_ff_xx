@@ -429,7 +429,7 @@ function renderCountGraph(seriesStats) {
 function renderSeriesTab(series) {
   const list = groupedBySeries[series];
   const heading = document.getElementById("series-title-heading");
-  heading.textContent = `${series} の分析`;
+  heading.textContent = `${series} のまとめ`;
 
   if (!list || list.length === 0) {
     document.getElementById("series-total-time").textContent = "-";
