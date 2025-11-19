@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>配信履歴まとめ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>配信履歴まとめ</h1>
+  </header>
+
+  <section id="selector">
+    <label for="series-select">シリーズ選択：</label>
+    <select id="series-select">
+      <option value="all">すべて</option>
+      <option value="FF1">FF1</option>
+      <option value="FF2">FF2</option>
+      <option value="FF3">FF3</option>
+      <option value="FF4">FF4</option>
+      <option value="FF5">FF5</option>
+      <option value="FF6">FF6</option>
+      <option value="FF7">FF7</option>
+      <option value="FF8">FF8</option>
+      <option value="FF9">FF9</option>
+      <option value="FF10">FF10</option>
+      <option value="FF12">FF12</option>
+      <option value="FF13">FF13</option>
+      <option value="FF14">FF14</option>
+      <option value="FF15">FF15</option>
+      <option value="FF16">FF16</option>
+    </select>
+  </section>
+
+  <section id="stats">
+    <p>配信回数：<span id="count"></span></p>
+    <p>総配信時間：<span id="total-time"></span></p>
+    <p>期間：<span id="range"></span></p>
+  </section>
+
+  <section id="list"></section>
+
+  <script src="script.js"></script>
+</body>
+</html>
