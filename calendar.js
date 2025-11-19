@@ -87,19 +87,27 @@ function renderCalendar(year, month) {
     events.forEach(ev => {
       const item = document.createElement("div");
       item.className = "event-item";
-
+    
       if (highlightedSeries && ev.series === highlightedSeries) {
         item.style.background = "#5A3E8F";
         item.style.borderColor = "#D7A7E9";
       }
-
-      item.innerHTML =
-        `<a href="https://www.youtube.com/watch?v=${ev.videoId}" target="_blank">
-          ${ev["タイトル"].slice(0, 12)}…
-        </a>`;
-
+    
+      const shortTitle = getShortTitle(ev, seriesLastIdMap);
+      const youtube = `https://www.youtube.com/watch?v=${ev.videoId}`;
+      const thumb = `https://i.ytimg.com/vi/${ev.videoId}/hqdefault.jpg`;
+    
+      item.innerHTML = `
+          <img class="event-thumb" src="${thumb}">
+          <div class="event-text">
+            <a class="event-title" href="${youtube}" target="_blank">${shortTitle}</a>
+            <span class="event-time">${ev["配信時間"]}</span>
+          </div>
+      `;
+    
       cell.appendChild(item);
     });
+
 
     calendar.appendChild(cell);
   }
