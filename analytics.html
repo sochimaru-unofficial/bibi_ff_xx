@@ -146,6 +146,63 @@
       
       </section>
 
+      <!-- ▼ シリーズ別タブ用コンテンツ -->
+      <section id="tab-series" class="tab-panel hidden">
+      
+        <!-- シリーズ統計 -->
+        <section id="series-summary-section" class="section">
+          <div class="section-header">
+            <h2 id="series-title-heading">シリーズ別統計</h2>
+            <button class="toggle-btn" data-target="series-summary-body">表示</button>
+          </div>
+      
+          <div id="series-summary-body" class="toggle-body collapsed fade-slide">
+            <div class="stat-cards">
+      
+              <div class="stat-card">
+                <div class="stat-label">総配信時間</div>
+                <div class="stat-value" id="series-total-time">--</div>
+              </div>
+      
+              <div class="stat-card">
+                <div class="stat-label">総配信回数</div>
+                <div class="stat-value" id="series-total-count">--</div>
+              </div>
+      
+              <div class="stat-card">
+                <div class="stat-label">最長配信時間</div>
+                <div class="stat-value" id="series-max-time">--</div>
+              </div>
+      
+              <div class="stat-card">
+                <div class="stat-label">平均配信時間</div>
+                <div class="stat-value" id="series-avg-time">--</div>
+              </div>
+      
+              <div class="stat-card stat-card-wide">
+                <div class="stat-label">プレイ期間</div>
+                <div class="stat-value" id="series-period">--</div>
+              </div>
+      
+            </div>
+          </div>
+        </section>
+      
+        <!-- 最長配信ランキング -->
+        <section id="series-top3-section" class="section">
+          <div class="section-header">
+            <h2>最長配信ランキング TOP3</h2>
+            <button class="toggle-btn" data-target="series-top3-body">表示</button>
+          </div>
+      
+          <div id="series-top3-body" class="toggle-body collapsed fade-slide">
+            <div id="series-top3-cards" class="ranking-cards"></div>
+          </div>
+        </section>
+      
+      </section>
+
+
 
       </main>
 
