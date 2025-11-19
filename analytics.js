@@ -234,37 +234,46 @@ function renderTotalCharts(seriesStats) {
   const timeData = seriesStats.map(s=>s.sec);
   const countData = seriesStats.map(s=>s.count);
 
-  const commonOptions = {
-    plugins: {
-      legend: {
-        labels: {
-          color: "#F9FAFB"
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: ctx => {
-            if (ctx.dataset.label.includes("時間")) {
-              const sec = ctx.raw;
-              return `${ctx.dataset.label}: ${formatHMS(sec)}`;
-            } else {
-              return `${ctx.dataset.label}: ${ctx.raw}`;
-            }
-          }
-        }
-      }
+const commonOptions = {
+  plugins: {
+    legend: {
+      labels: { color: "#F9FAFB" }
     },
-    scales: {
-      x: {
-        ticks: { color: "#E5E7EB" },
-        grid: { color: "rgba(55, 65, 81, 0.4)" }
-      },
-      y: {
-        ticks: { color: "#E5E7EB" },
-        grid: { color: "rgba(55, 65, 81, 0.4)" }
+    tooltip: {
+      callbacks: {
+        label: ctx => {
+          if (ctx.dataset.label.includes("時間")) {
+            const sec = ctx.raw;
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return `${ctx.dataset.label}: ${h}時間 ${m}分 ${s}秒`;
+          }
+          return `${ctx.dataset.label}: ${ctx.raw}`;
+        }
       }
     }
-  };
+  },
+  scales: {
+    x: {
+      ticks: { color: "#E5E7EB" },
+      grid: { color: "rgba(55, 65, 81, 0.4)" }
+    },
+    y: {
+      ticks: {
+        color: "#E5E7EB",
+        callback: function(value) {
+          const h = Math.floor(value / 3600);
+          const m = Math.floor((value % 3600) / 60);
+          const s = value % 60;
+          return `${h}h ${m}m ${s}s`;
+        }
+      },
+      grid: { color: "rgba(55, 65, 81, 0.4)" }
+    }
+  }
+};
+
 
   // 時間（棒グラフ）
   const ctxTime = document.getElementById("series-time-bar").getContext("2d");
