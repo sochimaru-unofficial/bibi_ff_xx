@@ -5,6 +5,8 @@ let flatList = [];
 
 async function main() {
   data = await fetch(JSON_URL).then(res => res.json());
+
+  // 全シリーズをフラットにまとめる
   flatList = Object.values(data).flat();
 
   document.getElementById("series-select").addEventListener("change", () => {
@@ -29,32 +31,35 @@ function updateView() {
 }
 
 function renderStats(list) {
-  const count = list.length;
-  document.getElementById("count").textContent = count + " 回";
+  // 配信回数
+  document.getElementById("count").textContent = list.length + " 回";
 
-  // 総配信時間
-  let totalMinutes = 0;
+  // ------- 総配信時間 -------
+  let totalSeconds = 0;
   list.forEach(item => {
-    if (item.duration) {
-      const parts = item.duration.split(":");
-      const h = parseInt(parts[0], 10);
-      const m = parseInt(parts[1], 10);
-      totalMinutes += h * 60 + m;
-    }
+    if (!item["配信時間"]) return;
+
+    // "HH:MM:SS" → 秒に変換
+    const [h, m, s] = item["配信時間"].split(":").map(Number);
+    totalSeconds += h * 3600 + m * 60 + s;
   });
-  const hh = Math.floor(totalMinutes / 60);
-  const mm = totalMinutes % 60;
 
-  document.getElementById("total-time").textContent = `${hh}時間${mm}分`;
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
-  // 期間
+  document.getElementById("total-time").textContent =
+    `${hours}時間 ${minutes}分 ${seconds}秒`;
+
+  // ------- 配信期間 -------
   const dates = list
-    .filter(i => i.start_time)
-    .map(i => new Date(i.start_time));
+    .filter(i => i["配信日時"])
+    .map(i => new Date(i["配信日時"]));
 
   if (dates.length > 0) {
     const min = new Date(Math.min(...dates));
     const max = new Date(Math.max(...dates));
+
     document.getElementById("range").textContent =
       `${formatDate(min)} 〜 ${formatDate(max)}`;
   } else {
@@ -64,8 +69,8 @@ function renderStats(list) {
 
 function formatDate(date) {
   const y = date.getFullYear();
-  const m = ("0" + (date.getMonth() + 1)).slice(0 - 2);
-  const d = ("0" + date.getDate()).slice(0 - 2);
+  const m = ("0" + (date.getMonth() + 1)).slice(-2);
+  const d = ("0" + date.getDate()).slice(-2);
   return `${y}/${m}/${d}`;
 }
 
@@ -77,18 +82,23 @@ function renderCards(list) {
     const card = document.createElement("div");
     card.className = "card";
 
+    // YouTube URL とサムネ
+    const youtube = `https://www.youtube.com/watch?v=${item.videoId}`;
+    const thumb = `https://i.ytimg.com/vi/${item.videoId}/maxresdefault.jpg`;
+
     card.innerHTML = `
-      <img class="thumb" src="${item.thumbnail_url}" />
+      <img class="thumb" src="${thumb}" />
 
       <div class="info">
-        <div class="title">${item.title}</div>
+        <div class="title">${item["タイトル"]}</div>
         <div class="meta">
-          日付：${item.start_time}<br>
-          配信時間：${item.duration}<br>
-          <a href="${item.youtube_url}" target="_blank">YouTubeリンク</a>
+          日付：${item["配信日時"]}<br>
+          配信時間：${item["配信時間"]}<br>
+          <a href="${youtube}" target="_blank">YouTubeリンク</a>
         </div>
       </div>
     `;
+
     container.appendChild(card);
   });
 }
