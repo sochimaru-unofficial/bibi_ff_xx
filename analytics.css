@@ -366,3 +366,13 @@ body {
   opacity: 1;
 }
 
+/* ▼ グラフ初期状態は透明 */
+.hidden-graph {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* ▼ 表示ボタンを押すとフェードイン */
+.hidden-graph.show-graph {
+  opacity: 1;
+}
