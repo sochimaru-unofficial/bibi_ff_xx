@@ -83,8 +83,17 @@ body {
 
 /* タブパネル */
 .tab-panel.hidden {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
 }
+
+.tab-panel {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
 
 /* 見出し */
 .section h2 {
