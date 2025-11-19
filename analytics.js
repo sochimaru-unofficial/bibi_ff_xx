@@ -1,181 +1,380 @@
 const JSON_URL = "streams_combined.json";
 
 let allData = [];
+let groupedBySeries = {};
+let charts = {};
+const SERIES_LIST = [
+  "FF1","FF2","FF3","FF4","FF5","FF6","FF7",
+  "FF8","FF9","FF10","FF12","FF13","FF14","FF15","FF16"
+];
 
-/* ========== 初期処理 ========== */
 async function main() {
   const data = await fetch(JSON_URL).then(r => r.json());
   allData = Object.values(data).flat();
 
-  renderGlobalStats();
-  renderSeriesStats();
-  renderCharts();
-  setupAnimations();
-}
-
-
-/* =====================================================
-   ① 全体統計
-===================================================== */
-function renderGlobalStats() {
-  let totalSec = 0;
-  let count = allData.length;
-
-  allData.forEach(item => {
-    const [h, m, s] = item["配信時間"].split(":").map(Number);
-    totalSec += h * 3600 + m * 60 + s;
-  });
-
-  const H = Math.floor(totalSec / 3600);
-  const M = Math.floor((totalSec % 3600) / 60);
-
-  document.getElementById("total-time").textContent = `${H}時間 ${M}分`;
-  document.getElementById("total-count").textContent = `${count} 回`;
-
-  const avgSec = totalSec / count;
-  const avgH = Math.floor(avgSec / 3600);
-  const avgM = Math.floor((avgSec % 3600) / 60);
-
-  document.getElementById("avg-time").textContent = `${avgH}時間 ${avgM}分`;
-}
-
-/* =====================================================
-   ② シリーズ別分析
-===================================================== */
-function renderSeriesStats() {
-  const grouped = {};
-
+  // シリーズごとにグループ化
+  groupedBySeries = {};
   allData.forEach(item => {
     const s = item.series;
-    if (!grouped[s]) grouped[s] = [];
-    grouped[s].push(item);
+    if (!groupedBySeries[s]) groupedBySeries[s] = [];
+    groupedBySeries[s].push(item);
   });
 
-  const container = document.getElementById("series-cards");
-
-  Object.keys(grouped).forEach(series => {
-    const list = grouped[series];
-
-    // 時間集計
-    let sec = 0;
-    list.forEach(item => {
-      const [h, m, s] = item["配信時間"].split(":").map(Number);
-      sec += h * 3600 + m * 60 + s;
-    });
-
-    const H = Math.floor(sec / 3600);
-    const M = Math.floor((sec % 3600) / 60);
-
-    // 期間
-    const dates = list.map(i => new Date(i["配信日時"]));
-    const min = new Date(Math.min(...dates));
-    const max = new Date(Math.max(...dates));
-    const days =
-      Math.ceil((max - min) / (1000 * 60 * 60 * 24)) + 1;
-
-    const card = document.createElement("div");
-    card.className = "series-card fade-up";
-
-    card.innerHTML = `
-      <div class="series-title">${series}</div>
-      <div class="series-item">総時間：${H}時間 ${M}分</div>
-      <div class="series-item">回数：${list.length} 回</div>
-      <div class="series-item">平均：${Math.floor(H/list.length)}時間 ${
-      Math.floor((sec/list.length)%3600/60)
-    }分</div>
-      <div class="series-item">プレイ期間：${format(min)} 〜 ${format(max)}（${days}日）</div>
-    `;
-
-    container.appendChild(card);
-  });
+  setupTabs();
+  renderTotalTab();   // デフォルト：トータル
+  setupObserver();
 }
 
-function format(d) {
+/* ========== ユーティリティ ========== */
+
+function parseDurationSeconds(str) {
+  if (!str) return 0;
+  const parts = str.split(":").map(Number);
+  let h = 0, m = 0, s = 0;
+  if (parts.length === 3) [h, m, s] = parts;
+  if (parts.length === 2) [m, s] = parts;
+  if (parts.length === 1) [s] = parts;
+  return h * 3600 + m * 60 + s;
+}
+
+function formatHMS(totalSec) {
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return `${h}時間 ${m}分 ${s}秒`;
+}
+
+function formatDate(d) {
   return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-/* =====================================================
-   ⑤ グラフ描画（Chart.js）
-===================================================== */
-function renderCharts() {
-  const seriesTime = {};
-  const monthTime = {};
-  let totalSec = 0;
+function formatDateTime(d) {
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${formatDate(d)} ${hh}:${mm} 開始`;
+}
 
-  allData.forEach(item => {
-    const s = item.series;
-    const d = new Date(item["配信日時"]);
-    const ym = `${d.getFullYear()}-${d.getMonth() + 1}`;
+function getShortTitle(item) {
+  const series = item.series;
+  const title = item["タイトル"];
+  const m = title.match(/#\s?(\d+)/);
+  if (m) return `${series} #${m[1]}`;
+  if (title.includes("最終回")) return `${series} 最終回`;
+  return series;
+}
 
-    const [h, m, sec] = item["配信時間"].split(":").map(Number);
-    const t = h * 3600 + m * 60 + sec;
-    totalSec += t;
+/* ========== タブ ========== */
 
-    seriesTime[s] = (seriesTime[s] || 0) + t;
-    monthTime[ym] = (monthTime[ym] || 0) + t;
-  });
-
-  /* --- 円グラフ --- */
-  new Chart(document.getElementById("pie-chart"), {
-    type: "pie",
-    data: {
-      labels: Object.keys(seriesTime),
-      datasets: [
-        {
-          data: Object.values(seriesTime),
-          backgroundColor: [
-            "#C084FC", "#A78BFA", "#818CF8", "#60A5FA",
-            "#34D399", "#F472B6", "#FACC15", "#FB923C"
-          ]
-        }
-      ]
-    }
-  });
-
-  /* --- 棒グラフ --- */
-  new Chart(document.getElementById("bar-chart"), {
-    type: "bar",
-    data: {
-      labels: Object.keys(monthTime),
-      datasets: [
-        {
-          label: "月別配信時間（秒）",
-          data: Object.values(monthTime),
-          backgroundColor: "#A78BFA"
-        }
-      ]
-    }
-  });
-
-  /* --- 折れ線グラフ（累計時間） --- */
-  let cumulative = [];
-  let running = 0;
-  Object.values(monthTime).forEach(v => {
-    running += v;
-    cumulative.push(running);
-  });
-
-  new Chart(document.getElementById("line-chart"), {
-    type: "line",
-    data: {
-      labels: Object.keys(monthTime),
-      datasets: [
-        {
-          label: "累計配信時間",
-          data: cumulative,
-          borderColor: "#C084FC"
-        }
-      ]
-    }
+function setupTabs() {
+  const tabs = document.querySelectorAll("#series-tabs .tab");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      const series = tab.dataset.series;
+      switchTab(series);
+    });
   });
 }
 
-/* =====================================================
-   スクロールアニメーション
-===================================================== */
-function setupAnimations() {
-  const targets = document.querySelectorAll(".fade-up");
+function switchTab(series) {
+  const totalPanel = document.getElementById("tab-total");
+  const seriesPanel = document.getElementById("tab-series");
 
+  [totalPanel, seriesPanel].forEach(panel => {
+    panel.classList.add("tab-switching");
+    setTimeout(() => panel.classList.remove("tab-switching"), 200);
+  });
+
+  if (series === "total") {
+    totalPanel.classList.remove("hidden");
+    seriesPanel.classList.add("hidden");
+    renderTotalTab();
+  } else {
+    totalPanel.classList.add("hidden");
+    seriesPanel.classList.remove("hidden");
+    renderSeriesTab(series);
+  }
+}
+
+/* ========== トータルタブ ========== */
+
+function renderTotalTab() {
+  let totalSec = 0;
+  let totalCount = allData.length;
+
+  const seriesStats = [];
+
+  SERIES_LIST.forEach(s => {
+    const list = groupedBySeries[s];
+    if (!list || list.length === 0) return;
+
+    let sec = 0;
+    list.forEach(item => sec += parseDurationSeconds(item["配信時間"]));
+    const dates = list.map(i => new Date(i["配信日時"]));
+    const min = new Date(Math.min(...dates));
+    const max = new Date(Math.max(...dates));
+    const periodMs = max - min;
+
+    seriesStats.push({
+      series: s,
+      count: list.length,
+      sec,
+      periodMs,
+      firstItem: list.slice().sort((a,b)=>new Date(a["配信日時"]) - new Date(b["配信日時"]))[0]
+    });
+
+    totalSec += sec;
+  });
+
+  // まとめ
+  document.getElementById("sum-total-time").textContent = formatHMS(totalSec);
+  document.getElementById("sum-total-count").textContent = `${totalCount} 回`;
+  const avgSec = totalCount ? Math.floor(totalSec / totalCount) : 0;
+  document.getElementById("sum-avg-time").textContent = formatHMS(avgSec);
+
+  // ランキング生成
+  renderTotalRankings(seriesStats);
+
+  // グラフ生成
+  renderTotalCharts(seriesStats);
+}
+
+function renderTotalRankings(seriesStats) {
+  const mostCountBox = document.getElementById("ranking-most-count");
+  const mostTimeBox = document.getElementById("ranking-most-time");
+  const longestPeriodBox = document.getElementById("ranking-longest-period");
+
+  mostCountBox.innerHTML = "";
+  mostTimeBox.innerHTML = "";
+  longestPeriodBox.innerHTML = "";
+
+  // 最多配信回数
+  const byCount = seriesStats.slice().sort((a,b)=>b.count - a.count).slice(0,3);
+  byCount.forEach((st, idx) => {
+    mostCountBox.appendChild(createSeriesRankingCard(st, idx, `配信回数：${st.count} 回`));
+  });
+
+  // 最長総時間
+  const bySec = seriesStats.slice().sort((a,b)=>b.sec - a.sec).slice(0,3);
+  bySec.forEach((st, idx) => {
+    mostTimeBox.appendChild(createSeriesRankingCard(st, idx, `総配信時間：${formatHMS(st.sec)}`));
+  });
+
+  // 最長期間
+  const byPeriod = seriesStats.slice().sort((a,b)=>b.periodMs - a.periodMs).slice(0,3);
+  byPeriod.forEach((st, idx) => {
+    const dates = groupedBySeries[st.series].map(i=>new Date(i["配信日時"]));
+    const min = new Date(Math.min(...dates));
+    const max = new Date(Math.max(...dates));
+    const periodText = `${formatDate(min)} 〜 ${formatDate(max)}`;
+    longestPeriodBox.appendChild(createSeriesRankingCard(st, idx, `期間：${periodText}`));
+  });
+}
+
+function createSeriesRankingCard(stat, index, lineText) {
+  const card = document.createElement("div");
+  card.className = "ranking-card fade-slide";
+
+  const rankBadge = document.createElement("div");
+  rankBadge.className = "rank-badge";
+  rankBadge.textContent = `${index + 1}位`;
+
+  const thumb = document.createElement("img");
+  thumb.className = "ranking-thumb";
+  const vid = stat.firstItem.videoId;
+  thumb.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+
+  const body = document.createElement("div");
+  body.className = "ranking-body";
+
+  const title = document.createElement("div");
+  title.className = "ranking-title";
+  title.textContent = stat.series;
+
+  const meta = document.createElement("div");
+  meta.className = "ranking-meta";
+  meta.textContent = lineText;
+
+  body.appendChild(title);
+  body.appendChild(meta);
+
+  card.appendChild(rankBadge);
+  card.appendChild(thumb);
+  card.appendChild(body);
+
+  return card;
+}
+
+/* ========== トータル グラフ ========== */
+
+function renderTotalCharts(seriesStats) {
+  const labels = seriesStats.map(s=>s.series);
+  const timeData = seriesStats.map(s=>s.sec);
+  const countData = seriesStats.map(s=>s.count);
+
+  const commonOptions = {
+    plugins: {
+      legend: {
+        labels: {
+          color: "#F9FAFB"
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            if (ctx.dataset.label.includes("時間")) {
+              const sec = ctx.raw;
+              return `${ctx.dataset.label}: ${formatHMS(sec)}`;
+            } else {
+              return `${ctx.dataset.label}: ${ctx.raw}`;
+            }
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: "#E5E7EB" },
+        grid: { color: "rgba(55, 65, 81, 0.4)" }
+      },
+      y: {
+        ticks: { color: "#E5E7EB" },
+        grid: { color: "rgba(55, 65, 81, 0.4)" }
+      }
+    }
+  };
+
+  // 時間（棒グラフ）
+  const ctxTime = document.getElementById("series-time-bar").getContext("2d");
+  if (charts.timeBar) charts.timeBar.destroy();
+  charts.timeBar = new Chart(ctxTime, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "シリーズ別配信時間",
+        data: timeData,
+        backgroundColor: "#F59E0B"
+      }]
+    },
+    options: commonOptions
+  });
+
+  // 回数（棒グラフ）
+  const ctxCount = document.getElementById("series-count-bar").getContext("2d");
+  if (charts.countBar) charts.countBar.destroy();
+  charts.countBar = new Chart(ctxCount, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "シリーズ別配信回数",
+        data: countData,
+        backgroundColor: "#6366F1"
+      }]
+    },
+    options: commonOptions
+  });
+}
+
+/* ========== シリーズタブ ========== */
+
+function renderSeriesTab(series) {
+  const list = groupedBySeries[series];
+
+  const heading = document.getElementById("series-title-heading");
+  heading.textContent = `${series} の分析`;
+
+  if (!list || list.length === 0) {
+    document.getElementById("series-total-time").textContent = "データなし";
+    document.getElementById("series-total-count").textContent = "-";
+    document.getElementById("series-max-time").textContent = "-";
+    document.getElementById("series-avg-time").textContent = "-";
+    document.getElementById("series-period").textContent = "-";
+    document.getElementById("series-top3-cards").innerHTML = "<p>データがありません。</p>";
+    return;
+  }
+
+  // 時間系
+  let totalSec = 0;
+  list.forEach(item => totalSec += parseDurationSeconds(item["配信時間"]));
+  const count = list.length;
+  const avgSec = count ? Math.floor(totalSec / count) : 0;
+
+  // 最長配信
+  const sortedByDuration = list.slice().sort(
+    (a,b)=>parseDurationSeconds(b["配信時間"]) - parseDurationSeconds(a["配信時間"])
+  );
+  const maxItem = sortedByDuration[0];
+
+  // 期間
+  const dates = list.map(i=>new Date(i["配信日時"]));
+  const min = new Date(Math.min(...dates));
+  const max = new Date(Math.max(...dates));
+
+  document.getElementById("series-total-time").textContent = formatHMS(totalSec);
+  document.getElementById("series-total-count").textContent = `${count} 回`;
+  document.getElementById("series-max-time").textContent = formatHMS(parseDurationSeconds(maxItem["配信時間"]));
+  document.getElementById("series-avg-time").textContent = formatHMS(avgSec);
+  document.getElementById("series-period").textContent =
+    `${formatDate(min)} 〜 ${formatDate(max)}`;
+
+  // 最長配信TOP3
+  const top3Box = document.getElementById("series-top3-cards");
+  top3Box.innerHTML = "";
+  sortedByDuration.slice(0,3).forEach((item, idx) => {
+    top3Box.appendChild(createEpisodeRankingCard(item, idx));
+  });
+}
+
+function createEpisodeRankingCard(item, index) {
+  const card = document.createElement("div");
+  card.className = "ranking-card fade-slide";
+
+  const rankBadge = document.createElement("div");
+  rankBadge.className = "rank-badge";
+  rankBadge.textContent = `${index + 1}位`;
+
+  const thumb = document.createElement("img");
+  thumb.className = "ranking-thumb";
+  thumb.src = `https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`;
+
+  const body = document.createElement("div");
+  body.className = "ranking-body";
+
+  const short = getShortTitle(item);
+  const full = item["タイトル"];
+
+  const titleDiv = document.createElement("div");
+  titleDiv.className = "ranking-title";
+  titleDiv.textContent = short;
+  titleDiv.title = full; // hover でフルタイトル
+
+  const meta = document.createElement("div");
+  meta.className = "ranking-meta";
+  const dt = new Date(item["配信日時"]);
+  const timeText = formatHMS(parseDurationSeconds(item["配信時間"]));
+  meta.textContent = `${formatDateTime(dt)} ／ ${timeText}`;
+
+  body.appendChild(titleDiv);
+  body.appendChild(meta);
+
+  card.appendChild(rankBadge);
+  card.appendChild(thumb);
+  card.appendChild(body);
+
+  card.addEventListener("click", () => {
+    window.open(`https://www.youtube.com/watch?v=${item.videoId}`, "_blank");
+  });
+
+  return card;
+}
+
+/* ========== スクロール・アニメーション ========== */
+
+function setupObserver() {
+  const targets = document.querySelectorAll(".fade-slide");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -184,7 +383,7 @@ function setupAnimations() {
     });
   }, { threshold: 0.2 });
 
-  targets.forEach(el => observer.observe(el));
+  targets.forEach(t => observer.observe(t));
 }
 
 /* 起動 */
