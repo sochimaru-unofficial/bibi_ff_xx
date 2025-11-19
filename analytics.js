@@ -1,13 +1,33 @@
 const JSON_URL = "streams_combined.json";
 
-
 let allData = [];
 let groupedBySeries = {};
 let charts = {};
+let seriesStatsCache = null; // グラフ用キャッシュ
+
 const SERIES_LIST = [
   "FF1","FF2","FF3","FF4","FF5","FF6","FF7",
   "FF8","FF9","FF10","FF12","FF13","FF14","FF15","FF16"
 ];
+
+/* ▼ シリーズカラー（棒グラフ用） */
+const SERIES_COLORS = {
+  FF1:  "#3BA3FF",
+  FF2:  "#D9473C",
+  FF3:  "#E0E0E0",
+  FF4:  "#6A4FBF",
+  FF5:  "#E35D9C",
+  FF6:  "#6F7A8A",
+  FF7:  "#C93131",
+  FF8:  "#7D2A35",
+  FF9:  "#D8A436",
+  FF10: "#4FC4E8",
+  FF12: "#D6C49E",
+  FF13: "#8DE8C0",
+  FF14: "#7F45D0",
+  FF15: "#1A2340",
+  FF16: "#A32020"
+};
 
 async function main() {
   const data = await fetch(JSON_URL).then(r => r.json());
@@ -24,8 +44,15 @@ async function main() {
   setupTabs();
   setupToggleButtons();
 
-  // 初回：全 fade-slide を一旦表示状態にしておく（透明バグ防止）
+  // 初回：fade-slide だが、グラフ用コンテナは除外して show 付与
   document.querySelectorAll(".fade-slide").forEach(el => {
+    if (
+      el.id === "total-graph-time-body" ||
+      el.id === "total-graph-count-body"
+    ) {
+      // グラフは fade-slide の show を付けない
+      return;
+    }
     el.classList.add("show");
   });
 
@@ -102,7 +129,7 @@ function switchTab(series) {
 
     renderTotalTab();
 
-    // トータル側のフェード系をもう一度表示状態に
+    // トータル側の fade 系を再表示
     triggerFadeIn(totalPanel);
   } else {
     totalPanel.classList.add("hidden");
@@ -125,22 +152,49 @@ function setupToggleButtons() {
       const body = document.getElementById(targetId);
       if (!body) return;
 
-      const isCollapsed = body.classList.contains("collapsed");
+      // ▼ グラフ専用の動き（IDで判定）
+      if (
+        targetId === "total-graph-time-body" ||
+        targetId === "total-graph-count-body"
+      ) {
+        const isShown = body.classList.contains("show-graph");
 
+        if (isShown) {
+          // 非表示
+          body.classList.remove("show-graph");
+          btn.textContent = "表示";
+        } else {
+          // 初回だけ描画（キャッシュから）
+          if (!body.dataset.loaded) {
+            if (!seriesStatsCache) {
+              // 念のため再計算（通常は renderTotalTab 時にキャッシュ済）
+              seriesStatsCache = buildSeriesStats();
+            }
+            if (targetId === "total-graph-time-body") {
+              renderTimeGraph(seriesStatsCache);
+            } else if (targetId === "total-graph-count-body") {
+              renderCountGraph(seriesStatsCache);
+            }
+            body.dataset.loaded = "true";
+          }
+          body.classList.add("show-graph");
+          btn.textContent = "非表示";
+        }
+        return;
+      }
+
+      // ▼ 通常のランキング・まとめ用トグル
+      const isCollapsed = body.classList.contains("collapsed");
       if (isCollapsed) {
-        // 表示する
         body.classList.remove("collapsed");
-        body.classList.remove("blow"); // アニメ再適用のため一度消す
-        // 少し遅らせて blow クラスを付けると綺麗にアニメ
+        body.classList.remove("blow");
         setTimeout(() => body.classList.add("blow"), 10);
         btn.textContent = "非表示";
 
-        // 中の fade-slide 要素も show を付けておく
         body.querySelectorAll(".fade-slide").forEach(el => {
           el.classList.add("show");
         });
       } else {
-        // 非表示に戻す
         body.classList.add("collapsed");
         body.classList.remove("blow");
         btn.textContent = "表示";
@@ -149,32 +203,30 @@ function setupToggleButtons() {
   });
 }
 
+/* toggle-body の状態リセット */
 function resetToggleBodies() {
   const bodies = document.querySelectorAll(".toggle-body");
   const buttons = document.querySelectorAll(".toggle-btn");
 
   bodies.forEach(b => {
-
+    // グラフ系は collapsed を触らず、透明状態に戻すだけ
     if (
       b.id === "total-graph-time-body" ||
-      b.id === "total-graph-count-body" ||
-      b.id === "total-summary-body"
+      b.id === "total-graph-count-body"
     ) {
-      // 透明化だけ戻す
       b.classList.remove("show-graph");
       return;
     }
 
+    // それ以外は普通に畳む
     b.classList.add("collapsed");
     b.classList.remove("blow");
   });
 
-  // ボタンもリセット
   buttons.forEach(btn => {
     btn.textContent = "表示";
   });
 }
-
 
 /* パネル内の fade-slide を再度 show にする（タブ切替用） */
 function triggerFadeIn(panel) {
@@ -186,11 +238,9 @@ function triggerFadeIn(panel) {
 
 /* ========= トータルタブ ========= */
 
-function renderTotalTab() {
-  let totalSec = 0;
-  let totalCount = allData.length;
+// シリーズごとの stats を作る共通関数（キャッシュ用）
+function buildSeriesStats() {
   const seriesStats = [];
-  let allDates = [];
 
   SERIES_LIST.forEach(s => {
     const list = groupedBySeries[s];
@@ -204,8 +254,6 @@ function renderTotalTab() {
     const max = new Date(Math.max(...dates));
     const periodMs = max - min;
 
-    allDates.push(...dates);
-
     const firstItem = list.slice().sort(
       (a, b) => new Date(a["配信日時"]) - new Date(b["配信日時"])
     )[0];
@@ -217,8 +265,27 @@ function renderTotalTab() {
       periodMs,
       firstItem
     });
+  });
 
-    totalSec += sec;
+  return seriesStats;
+}
+
+function renderTotalTab() {
+  let totalSec = 0;
+  let totalCount = allData.length;
+  let allDates = [];
+
+  const seriesStats = buildSeriesStats();
+  seriesStatsCache = seriesStats; // グラフ用キャッシュ
+
+  seriesStats.forEach(stat => {
+    totalSec += stat.sec;
+
+    const list = groupedBySeries[stat.series];
+    if (list && list.length > 0) {
+      const dates = list.map(i => new Date(i["配信日時"]));
+      allDates.push(...dates);
+    }
   });
 
   // まとめ
@@ -227,18 +294,18 @@ function renderTotalTab() {
   const avgSec = totalCount ? Math.floor(totalSec / totalCount) : 0;
   document.getElementById("sum-avg-time").textContent = formatHMS(avgSec);
 
-  // 全体プレイ期間
-  const min = new Date(Math.min(...allDates));
-  const max = new Date(Math.max(...allDates));
-  document.getElementById("sum-total-period").textContent =
-    `${formatDate(min)} 〜 ${formatDate(max)}`;
+  if (allDates.length > 0) {
+    const min = new Date(Math.min(...allDates));
+    const max = new Date(Math.max(...allDates));
+    document.getElementById("sum-total-period").textContent =
+      `${formatDate(min)} 〜 ${formatDate(max)}`;
+  } else {
+    document.getElementById("sum-total-period").textContent = "-";
+  }
 
   // ランキング
   renderTotalRankings(seriesStats);
-
-  renderTotalCharts(seriesStats);
 }
-
 
 function renderTotalRankings(seriesStats) {
   const mostCountBox = document.getElementById("ranking-most-count");
@@ -312,14 +379,17 @@ function createSeriesRankingCard(stat, index, label, value) {
   return card;
 }
 
-function renderTotalCharts(seriesStats) {
+/* ========= グラフ描画 ========= */
+
+function renderTimeGraph(seriesStats) {
   const labels = seriesStats.map(s => s.series);
   const timeData = seriesStats.map(s => s.sec);
-  const countData = seriesStats.map(s => s.count);
   const colors = labels.map(s => SERIES_COLORS[s] || "#888");
 
-  /* ▼ 時間棒グラフ ▼ */
-  const ctxTime = document.getElementById("series-time-bar").getContext("2d");
+  const canvas = document.getElementById("series-time-bar");
+  if (!canvas) return;
+  const ctxTime = canvas.getContext("2d");
+
   if (charts.timeBar) charts.timeBar.destroy();
 
   charts.timeBar = new Chart(ctxTime, {
@@ -349,9 +419,17 @@ function renderTotalCharts(seriesStats) {
       }
     }
   });
+}
 
-  /* ▼ 回数棒グラフ ▼ */
-  const ctxCount = document.getElementById("series-count-bar").getContext("2d");
+function renderCountGraph(seriesStats) {
+  const labels = seriesStats.map(s => s.series);
+  const countData = seriesStats.map(s => s.count);
+  const colors = labels.map(s => SERIES_COLORS[s] || "#888";
+
+  const canvas = document.getElementById("series-count-bar");
+  if (!canvas) return;
+  const ctxCount = canvas.getContext("2d");
+
   if (charts.countBar) charts.countBar.destroy();
 
   charts.countBar = new Chart(ctxCount, {
@@ -381,22 +459,7 @@ function renderTotalCharts(seriesStats) {
       }
     }
   });
-
-  /* ▼ フェードイン（ここが超重要！） */
-  const timeBody = document.getElementById("total-graph-time-body");
-  const countBody = document.getElementById("total-graph-count-body");
-
-  // 初期状態は透明
-  timeBody.classList.remove("show-graph");
-  countBody.classList.remove("show-graph");
-
-  // 次のフレームで確実にフェードイン
-  requestAnimationFrame(() => {
-    timeBody.classList.add("show-graph");
-    countBody.classList.add("show-graph");
-  });
 }
-
 
 /* ========= シリーズタブ ========= */
 
