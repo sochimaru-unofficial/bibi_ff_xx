@@ -1,51 +1,109 @@
+/* ===== 基本・背景 ===== */
 body {
-  font-family: sans-serif;
-  margin: 20px;
-  background: #f5f5f5;
+  font-family: "Segoe UI", "Hiragino Sans", sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #121217; /* ダーク背景 */
+  color: #EDEAF5; /* 少し明るめの白紫 */
 }
 
+/* ===== ヘッダー ===== */
 header h1 {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #D7A7E9; /* アクセント紫 */
+  text-shadow: 0 0 6px rgba(215, 167, 233, 0.4);
 }
 
+/* ===== セレクタ（プルダウン） ===== */
 #selector {
   margin: 20px 0;
 }
 
-#stats {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+#series-select {
+  background: #1D1A22; /* 濃紫グレー */
+  color: #EDEAF5;
+  border: 1px solid #8A4FB7; /* メイン紫 */
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
 }
 
+#series-select:hover {
+  border-color: #D7A7E9;
+}
+
+/* ===== 統計エリア ===== */
+#stats {
+  background: #1D1A22;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  border-left: 4px solid #8A4FB7;
+}
+
+#stats p {
+  margin: 5px 0;
+  font-size: 1.1rem;
+}
+
+/* ===== 配信カード一覧 ===== */
 #list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
 }
 
+/* ===== 配信カード ===== */
 .card {
-  background: white;
+  background: #1A1920;
   display: flex;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  gap: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  border: 1px solid rgba(138, 79, 183, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+  border-color: rgba(215, 167, 233, 0.7);
+}
+
+/* ===== サムネイル ===== */
 .thumb {
-  width: 180px;
-  border-radius: 8px;
+  width: 200px;
+  border-radius: 10px;
+  border: 2px solid #8A4FB7;
 }
 
+/* ===== カード内部（テキスト） ===== */
 .info .title {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
+  color: #D7A7E9;
+  margin-bottom: 6px;
+  text-shadow: 0 0 6px rgba(138, 79, 183, 0.4);
 }
 
 .meta {
   margin-top: 5px;
-  color: #555;
+  color: #C5BAD5;
+  line-height: 1.4;
+}
+
+/* ===== リンク ===== */
+a {
+  color: #A678FF;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a:hover {
+  color: #D7A7E9;
+  text-shadow: 0 0 4px rgba(215, 167, 233, 0.6);
 }
