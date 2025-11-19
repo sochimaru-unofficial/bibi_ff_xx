@@ -373,19 +373,20 @@ function renderTotalCharts(seriesStats) {
     }
   });
 
-  /* ▼ 表示ボタン押したらフェードイン */
+  /* ▼ フェードイン（ここが超重要！） */
   const timeBody = document.getElementById("total-graph-time-body");
   const countBody = document.getElementById("total-graph-count-body");
 
+  // 初期状態は透明
   timeBody.classList.remove("show-graph");
   countBody.classList.remove("show-graph");
 
+  // 次のフレームでフェードイン
   requestAnimationFrame(() => {
     timeBody.classList.add("show-graph");
     countBody.classList.add("show-graph");
   });
 }
-
 
 /* ========= シリーズタブ ========= */
 
