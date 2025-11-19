@@ -48,89 +48,93 @@
       <!-- ▼ トータルタブ用コンテンツ -->
       <section id="tab-total" class="tab-panel">
       
-        <!-- ランキング -->
-        <section id="total-rankings" class="section section-total">
-          <h2>ランキング</h2>
+      <!-- ランキング -->
+      <section id="total-rankings" class="section section-total">
+        <h2>ランキング</h2>
       
-          <!-- 最多配信シリーズ（中カテゴリ） -->
-          <div class="sub-section">
-            <div class="sub-header">
-              <h3>最多配信シリーズ</h3>
-              <button class="toggle-btn" data-target="ranking-most-count">表示</button>
-            </div>
-            <div id="ranking-most-count" class="toggle-body collapsed fade-slide ranking-cards"></div>
+        <!-- 最多配信シリーズ -->
+        <div class="sub-section">
+          <h3>最多配信シリーズ</h3>
+          <div class="toggle-center">
+            <button class="toggle-btn" data-target="ranking-most-count">表示</button>
           </div>
+          <div id="ranking-most-count" class="toggle-body collapsed fade-slide ranking-cards"></div>
+        </div>
       
-          <!-- 最長配信時間シリーズ（中カテゴリ） -->
-          <div class="sub-section">
-            <div class="sub-header">
-              <h3>最長配信時間シリーズ</h3>
-              <button class="toggle-btn" data-target="ranking-most-time">表示</button>
-            </div>
-            <div id="ranking-most-time" class="toggle-body collapsed fade-slide ranking-cards"></div>
+        <!-- 最長配信時間シリーズ -->
+        <div class="sub-section">
+          <h3>最長配信時間シリーズ</h3>
+          <div class="toggle-center">
+            <button class="toggle-btn" data-target="ranking-most-time">表示</button>
           </div>
+          <div id="ranking-most-time" class="toggle-body collapsed fade-slide ranking-cards"></div>
+        </div>
       
-          <!-- 最長期間シリーズ（中カテゴリ） -->
-          <div class="sub-section">
-            <div class="sub-header">
-              <h3>最長期間シリーズ</h3>
-              <button class="toggle-btn" data-target="ranking-longest-period">表示</button>
-            </div>
-            <div id="ranking-longest-period" class="toggle-body collapsed fade-slide ranking-cards"></div>
+        <!-- 最長期間シリーズ -->
+        <div class="sub-section">
+          <h3>最長期間シリーズ</h3>
+          <div class="toggle-center">
+            <button class="toggle-btn" data-target="ranking-longest-period">表示</button>
           </div>
-        </section>
+          <div id="ranking-longest-period" class="toggle-body collapsed fade-slide ranking-cards"></div>
+        </div>
+      </section>
+
       
-        <!-- グラフシリーズ -->
-        <section id="total-graphs" class="section section-total">
-          <h2>グラフシリーズ</h2>
+      <!-- グラフシリーズ -->
+      <section id="total-graphs" class="section section-total">
+        <h2>グラフシリーズ</h2>
       
-          <!-- シリーズ別配信時間 -->
-          <div class="sub-section">
-            <div class="sub-header">
-              <h3>シリーズ別配信時間</h3>
-              <button class="toggle-btn" data-target="total-graph-time-body">表示</button>
-            </div>
-            <div id="total-graph-time-body" class="toggle-body collapsed fade-slide">
-              <canvas id="series-time-bar"></canvas>
-            </div>
+        <!-- シリーズ別配信時間 -->
+        <div class="sub-section">
+          <h3>シリーズ別配信時間</h3>
+          <div class="toggle-center">
+            <button class="toggle-btn" data-target="total-graph-time-body">表示</button>
           </div>
+          <div id="total-graph-time-body" class="toggle-body collapsed fade-slide fade-graph">
+            <canvas id="series-time-bar"></canvas>
+          </div>
+        </div>
       
-          <!-- シリーズ別配信回数 -->
-          <div class="sub-section">
-            <div class="sub-header">
-              <h3>シリーズ別配信回数</h3>
-              <button class="toggle-btn" data-target="total-graph-count-body">表示</button>
-            </div>
-            <div id="total-graph-count-body" class="toggle-body collapsed fade-slide">
-              <canvas id="series-count-bar"></canvas>
-            </div>
+        <!-- シリーズ別配信回数 -->
+        <div class="sub-section">
+          <h3>シリーズ別配信回数</h3>
+          <div class="toggle-center">
+            <button class="toggle-btn" data-target="total-graph-count-body">表示</button>
           </div>
-        </section>
+          <div id="total-graph-count-body" class="toggle-body collapsed fade-slide fade-graph">
+            <canvas id="series-count-bar"></canvas>
+          </div>
+        </div>
       
-        <!-- まとめ -->
-        <section id="total-summary" class="section section-total">
-          <div class="section-header">
-            <h2>まとめ</h2>
-            <button class="toggle-btn" data-target="total-summary-body">表示</button>
-          </div>
-        
-          <div id="total-summary-body" class="toggle-body collapsed fade-slide">
-            <div class="summary-cards">
-              <div class="summary-card">
-                <div class="summary-title">総配信時間</div>
-                <div class="summary-value" id="sum-total-time">--</div>
-              </div>
-              <div class="summary-card">
-                <div class="summary-title">総配信回数</div>
-                <div class="summary-value" id="sum-total-count">--</div>
-              </div>
-              <div class="summary-card">
-                <div class="summary-title">平均配信時間</div>
-                <div class="summary-value" id="sum-avg-time">--</div>
-              </div>
+      </section>
+
+      
+      <!-- まとめ -->
+      <section id="total-summary" class="section section-total">
+        <div class="section-header">
+          <h2>まとめ</h2>
+          <button class="toggle-btn" data-target="total-summary-body">表示</button>
+        </div>
+      
+        <div id="total-summary-body" class="toggle-body collapsed fade-slide fade-graph">
+          <div class="summary-cards">
+            <div class="summary-card">
+              <div class="summary-title">総配信時間</div>
+              <div class="summary-value" id="sum-total-time">--</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-title">総配信回数</div>
+              <div class="summary-value" id="sum-total-count">--</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-title">平均配信時間</div>
+              <div class="summary-value" id="sum-avg-time">--</div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
+
 
       </section>
 
