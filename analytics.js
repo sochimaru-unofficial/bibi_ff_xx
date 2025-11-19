@@ -3,14 +3,14 @@ const JSON_URL = "streams_combined.json";
 let allData = [];
 let groupedBySeries = {};
 let charts = {};
-let seriesStatsCache = null; // グラフ用キャッシュ
+let seriesStatsCache = null;
 
 const SERIES_LIST = [
   "FF1","FF2","FF3","FF4","FF5","FF6","FF7",
   "FF8","FF9","FF10","FF12","FF13","FF14","FF15","FF16"
 ];
 
-/* ▼ シリーズカラー（棒グラフ用） */
+/* ▼ シリーズカラー */
 const SERIES_COLORS = {
   FF1:  "#3BA3FF",
   FF2:  "#D9473C",
@@ -33,7 +33,6 @@ async function main() {
   const data = await fetch(JSON_URL).then(r => r.json());
   allData = Object.values(data).flat();
 
-  // シリーズごとにグループ化
   groupedBySeries = {};
   allData.forEach(item => {
     const s = item.series;
@@ -44,19 +43,11 @@ async function main() {
   setupTabs();
   setupToggleButtons();
 
-  // 初回：fade-slide だが、グラフ用コンテナは除外して show 付与
   document.querySelectorAll(".fade-slide").forEach(el => {
-    if (
-      el.id === "total-graph-time-body" ||
-      el.id === "total-graph-count-body"
-    ) {
-      // グラフは fade-slide の show を付けない
-      return;
-    }
+    if (el.id === "total-graph-time-body" || el.id === "total-graph-count-body") return;
     el.classList.add("show");
   });
 
-  // デフォルトはトータルタブ
   renderTotalTab();
 }
 
@@ -120,23 +111,17 @@ function switchTab(series) {
   const totalPanel = document.getElementById("tab-total");
   const seriesPanel = document.getElementById("tab-series");
 
-  // タブ切替時：全部の「表示エリア」をリセット
   resetToggleBodies();
 
   if (series === "total") {
     totalPanel.classList.remove("hidden");
     seriesPanel.classList.add("hidden");
-
     renderTotalTab();
-
-    // トータル側の fade 系を再表示
     triggerFadeIn(totalPanel);
   } else {
     totalPanel.classList.add("hidden");
     seriesPanel.classList.remove("hidden");
-
     renderSeriesTab(series);
-
     triggerFadeIn(seriesPanel);
   }
 }
@@ -152,7 +137,7 @@ function setupToggleButtons() {
       const body = document.getElementById(targetId);
       if (!body) return;
 
-      // ▼ グラフ専用の動き（IDで判定）
+      // ▼ グラフ専用
       if (
         targetId === "total-graph-time-body" ||
         targetId === "total-graph-count-body"
@@ -160,30 +145,25 @@ function setupToggleButtons() {
         const isShown = body.classList.contains("show-graph");
 
         if (isShown) {
-          // 非表示
           body.classList.remove("show-graph");
           btn.textContent = "表示";
         } else {
-          // 初回だけ描画（キャッシュから）
           if (!body.dataset.loaded) {
-            if (!seriesStatsCache) {
-              // 念のため再計算（通常は renderTotalTab 時にキャッシュ済）
-              seriesStatsCache = buildSeriesStats();
-            }
-            if (targetId === "total-graph-time-body") {
-              renderTimeGraph(seriesStatsCache);
-            } else if (targetId === "total-graph-count-body") {
-              renderCountGraph(seriesStatsCache);
-            }
+            if (!seriesStatsCache) seriesStatsCache = buildSeriesStats();
+
+            if (targetId === "total-graph-time-body") renderTimeGraph(seriesStatsCache);
+            if (targetId === "total-graph-count-body") renderCountGraph(seriesStatsCache);
+
             body.dataset.loaded = "true";
           }
+
           body.classList.add("show-graph");
           btn.textContent = "非表示";
         }
         return;
       }
 
-      // ▼ 通常のランキング・まとめ用トグル
+      // ▼ 通常トグル
       const isCollapsed = body.classList.contains("collapsed");
       if (isCollapsed) {
         body.classList.remove("collapsed");
@@ -191,9 +171,7 @@ function setupToggleButtons() {
         setTimeout(() => body.classList.add("blow"), 10);
         btn.textContent = "非表示";
 
-        body.querySelectorAll(".fade-slide").forEach(el => {
-          el.classList.add("show");
-        });
+        body.querySelectorAll(".fade-slide").forEach(el => el.classList.add("show"));
       } else {
         body.classList.add("collapsed");
         body.classList.remove("blow");
@@ -203,13 +181,11 @@ function setupToggleButtons() {
   });
 }
 
-/* toggle-body の状態リセット */
 function resetToggleBodies() {
   const bodies = document.querySelectorAll(".toggle-body");
   const buttons = document.querySelectorAll(".toggle-btn");
 
   bodies.forEach(b => {
-    // グラフ系は collapsed を触らず、透明状態に戻すだけ
     if (
       b.id === "total-graph-time-body" ||
       b.id === "total-graph-count-body"
@@ -218,27 +194,20 @@ function resetToggleBodies() {
       return;
     }
 
-    // それ以外は普通に畳む
     b.classList.add("collapsed");
     b.classList.remove("blow");
   });
 
-  buttons.forEach(btn => {
-    btn.textContent = "表示";
-  });
+  buttons.forEach(btn => btn.textContent = "表示");
 }
 
-/* パネル内の fade-slide を再度 show にする（タブ切替用） */
 function triggerFadeIn(panel) {
   const targets = panel.querySelectorAll(".fade-slide");
-  targets.forEach(el => {
-    el.classList.add("show");
-  });
+  targets.forEach(el => el.classList.add("show"));
 }
 
 /* ========= トータルタブ ========= */
 
-// シリーズごとの stats を作る共通関数（キャッシュ用）
 function buildSeriesStats() {
   const seriesStats = [];
 
@@ -276,7 +245,7 @@ function renderTotalTab() {
   let allDates = [];
 
   const seriesStats = buildSeriesStats();
-  seriesStatsCache = seriesStats; // グラフ用キャッシュ
+  seriesStatsCache = seriesStats;
 
   seriesStats.forEach(stat => {
     totalSec += stat.sec;
@@ -288,7 +257,6 @@ function renderTotalTab() {
     }
   });
 
-  // まとめ
   document.getElementById("sum-total-time").textContent = formatHMS(totalSec);
   document.getElementById("sum-total-count").textContent = `${totalCount} 回`;
   const avgSec = totalCount ? Math.floor(totalSec / totalCount) : 0;
@@ -303,7 +271,6 @@ function renderTotalTab() {
     document.getElementById("sum-total-period").textContent = "-";
   }
 
-  // ランキング
   renderTotalRankings(seriesStats);
 }
 
@@ -316,21 +283,18 @@ function renderTotalRankings(seriesStats) {
   mostTimeBox.innerHTML = "";
   longestPeriodBox.innerHTML = "";
 
-  // 最多配信シリーズ（回数）
   const byCount = seriesStats.slice().sort((a,b) => b.count - a.count).slice(0, 3);
   byCount.forEach((st, idx) => {
     const card = createSeriesRankingCard(st, idx, "配信回数", `${st.count}回`);
     mostCountBox.appendChild(card);
   });
 
-  // 最長配信時間シリーズ
   const bySec = seriesStats.slice().sort((a,b) => b.sec - a.sec).slice(0, 3);
   bySec.forEach((st, idx) => {
     const card = createSeriesRankingCard(st, idx, "総配信時間", formatHMS(st.sec));
     mostTimeBox.appendChild(card);
   });
 
-  // 最長期間シリーズ（年なし）
   const byPeriod = seriesStats.slice().sort((a,b) => b.periodMs - a.periodMs).slice(0, 3);
   byPeriod.forEach((st, idx) => {
     const list = groupedBySeries[st.series];
@@ -342,7 +306,6 @@ function renderTotalRankings(seriesStats) {
     longestPeriodBox.appendChild(card);
   });
 
-  // 作られたランキングカードにも show を付けておく
   document.querySelectorAll("#total-rankings .ranking-card").forEach(card => {
     card.classList.add("show");
   });
@@ -424,7 +387,7 @@ function renderTimeGraph(seriesStats) {
 function renderCountGraph(seriesStats) {
   const labels = seriesStats.map(s => s.series);
   const countData = seriesStats.map(s => s.count);
-  const colors = labels.map(s => SERIES_COLORS[s] || "#888";)
+  const colors = labels.map(s => SERIES_COLORS[s] || "#888");
 
   const canvas = document.getElementById("series-count-bar");
   if (!canvas) return;
@@ -496,8 +459,7 @@ function renderSeriesTab(series) {
   document.getElementById("series-total-count").textContent = `${count} 回`;
   document.getElementById("series-max-time").textContent = formatHMS(parseDurationSeconds(maxItem["配信時間"]));
   document.getElementById("series-avg-time").textContent = formatHMS(avgSec);
-  document.getElementById("series-period").textContent =
-    `${formatDate(min)} 〜 ${formatDate(max)}`;
+  document.getElementById("series-period").textContent = `${formatDate(min)} 〜 ${formatDate(max)}`;
 
   const top3Box = document.getElementById("series-top3-cards");
   top3Box.innerHTML = "";
@@ -506,7 +468,6 @@ function renderSeriesTab(series) {
     top3Box.appendChild(card);
   });
 
-  // シリーズ内TOP3カードにも show を付けておく
   document.querySelectorAll("#series-top3-section .ranking-card").forEach(card => {
     card.classList.add("show");
   });
