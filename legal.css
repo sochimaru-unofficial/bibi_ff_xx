@@ -1,0 +1,74 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #111827;
+  color: #E5E7EB;
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+/* 左上戻るボタン */
+.back-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: 0.25s;
+  z-index: 1000;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-3px);
+}
+
+/* 全体コンテナ */
+.legal-container {
+  max-width: 860px;
+  margin: 120px auto 60px;
+  padding: 0 20px;
+}
+
+/* 見出し */
+h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #F3F4F6;
+}
+
+.sub {
+  opacity: 0.7;
+  margin-bottom: 40px;
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  border-left: 4px solid #3B82F6;
+  padding-left: 12px;
+  color: #F3F4F6;
+}
+
+p, li {
+  line-height: 1.7;
+}
+
+a {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+a:hover {
+  opacity: 0.8;
+}
