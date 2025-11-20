@@ -132,3 +132,35 @@ a:hover {
   transform: translateY(-3px);
 }
 
+/* ===== レスポンシブ対応 ===== */
+
+/* ▼ タブレット（1024px以下）：2列 */
+@media (max-width: 1024px) {
+  #list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  body {
+    padding: 16px;
+    padding-top: 60px;
+  }
+}
+
+/* ▼ スマホ（640px以下）：1列 */
+@media (max-width: 640px) {
+  #list {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .meta {
+    font-size: 0.85rem;
+  }
+}
