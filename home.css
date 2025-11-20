@@ -68,3 +68,22 @@ body {
   0% { transform: scale(0.8); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+.site-footer {
+  margin-top: 60px;
+  padding: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.site-footer a {
+  color: #93c5fd; /* 明るい水色で見やすい */
+  text-decoration: none;
+  transition: 0.25s;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
